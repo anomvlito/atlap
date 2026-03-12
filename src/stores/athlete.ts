@@ -8,8 +8,17 @@ import {
   mockRivals,
   mockKpis,
   mockNextCompetition,
+  mockQuotes,
+  mockSchedule,
+  mockExercises,
+  mockHabits,
   type Mark,
   type TrainingSession,
+  type TrainingSensations,
+  type MarkSensations,
+  type Habit,
+  type ExerciseEntry,
+  type ScheduledSession,
 } from '@/data/mock'
 
 export const useAthleteStore = defineStore('athlete', () => {
@@ -21,14 +30,20 @@ export const useAthleteStore = defineStore('athlete', () => {
   const kpis = ref(mockKpis)
   const nextCompetition = ref(mockNextCompetition)
   const selectedDiscipline = ref('400m')
+  const schedule = ref(mockSchedule)
+  const exercises = ref(mockExercises)
+  const habits = ref(mockHabits)
+  const quotes = ref(mockQuotes)
+
+  // ─── COMPUTEDS ───────────────────────────────────────────────
 
   const disciplines = computed(() => athlete.value.disciplines)
 
-  const marksByDiscipline = computed(() => {
-    return marks.value
+  const marksByDiscipline = computed(() =>
+    marks.value
       .filter((m) => m.discipline === selectedDiscipline.value)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  })
+  )
 
   const personalRecord = computed(() => {
     const disciplineMarks = marksByDiscipline.value
@@ -36,19 +51,19 @@ export const useAthleteStore = defineStore('athlete', () => {
     return disciplineMarks.reduce((best, m) => (m.resultSeconds < best.resultSeconds ? m : best))
   })
 
-  const recentSessions = computed(() => {
-    return sessions.value
+  const recentSessions = computed(() =>
+    sessions.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5)
-  })
+  )
 
-  const recentMarks = computed(() => {
-    return marks.value
+  const recentMarks = computed(() =>
+    marks.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5)
-  })
+  )
 
   const sessionsByType = computed(() => {
     const counts = { velocidad: 0, fondo: 0, tecnica: 0, fuerza: 0 }
@@ -58,16 +73,85 @@ export const useAthleteStore = defineStore('athlete', () => {
     return counts
   })
 
+  const dailyQuote = computed(() => {
+    const now = new Date()
+    const start = new Date(now.getFullYear(), 0, 0)
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+    return quotes.value[dayOfYear % quotes.value.length]!
+  })
+
+  const medals = computed(() => {
+    const gold = marks.value.filter((m) => m.ranking === 1).length
+    const silver = marks.value.filter((m) => m.ranking === 2).length
+    const bronze = marks.value.filter((m) => m.ranking === 3).length
+    return { gold, silver, bronze, total: gold + silver + bronze }
+  })
+
+  const medalsByYear = computed(() => {
+    const result: Record<string, { gold: number; silver: number; bronze: number }> = {}
+    for (const mark of marks.value) {
+      if (mark.ranking !== null && mark.ranking >= 1 && mark.ranking <= 3) {
+        const year = mark.date.split('-')[0]!
+        if (!result[year]) result[year] = { gold: 0, silver: 0, bronze: 0 }
+        if (mark.ranking === 1) result[year]!.gold++
+        else if (mark.ranking === 2) result[year]!.silver++
+        else if (mark.ranking === 3) result[year]!.bronze++
+      }
+    }
+    return result
+  })
+
+  const exercisesByName = computed(() => {
+    const result: Record<string, ExerciseEntry[]> = {}
+    for (const ex of exercises.value) {
+      if (!result[ex.name]) result[ex.name] = []
+      result[ex.name]!.push(ex)
+    }
+    return result
+  })
+
+  const habitsByType = computed(() => {
+    const result: Record<string, Habit[]> = {}
+    for (const h of habits.value) {
+      if (!result[h.type]) result[h.type] = []
+      result[h.type]!.push(h)
+    }
+    return result
+  })
+
+  // ─── ACTIONS ─────────────────────────────────────────────────
+
   function setDiscipline(discipline: string) {
     selectedDiscipline.value = discipline
   }
 
   function addSession(session: Omit<TrainingSession, 'id'>) {
-    const newSession: TrainingSession = {
-      ...session,
-      id: `s${Date.now()}`,
-    }
+    const newSession: TrainingSession = { ...session, id: `s${Date.now()}` }
     sessions.value = [newSession, ...sessions.value]
+  }
+
+  function updateSessionSensations(id: string, sensations: TrainingSensations) {
+    sessions.value = sessions.value.map((s) =>
+      s.id === id ? { ...s, sensations } : s
+    )
+  }
+
+  function updateMarkSensations(id: string, sensations: MarkSensations) {
+    marks.value = marks.value.map((m) =>
+      m.id === id ? { ...m, sensations } : m
+    )
+  }
+
+  function addHabit(habit: Omit<Habit, 'id'>) {
+    habits.value = [{ ...habit, id: `h${Date.now()}` }, ...habits.value]
+  }
+
+  function toggleScheduleCompleted(id: string, sessionId?: string) {
+    schedule.value = schedule.value.map((s) =>
+      s.id === id
+        ? { ...s, completed: !s.completed, sessionId: sessionId ?? s.sessionId }
+        : s
+    ) as ScheduledSession[]
   }
 
   return {
@@ -79,13 +163,26 @@ export const useAthleteStore = defineStore('athlete', () => {
     kpis,
     nextCompetition,
     selectedDiscipline,
+    schedule,
+    exercises,
+    habits,
+    quotes,
     disciplines,
     marksByDiscipline,
     personalRecord,
     recentSessions,
     recentMarks,
     sessionsByType,
+    dailyQuote,
+    medals,
+    medalsByYear,
+    exercisesByName,
+    habitsByType,
     setDiscipline,
     addSession,
+    updateSessionSensations,
+    updateMarkSensations,
+    addHabit,
+    toggleScheduleCompleted,
   }
 })

@@ -8,10 +8,20 @@
   --vt-c-black-soft: #0a0a0a;
   --vt-c-black-mute: #111111;
 
-  --accent-primary: #6366f1;
+  --accent-primary: #5b5ef4;
   --accent-secondary: #a855f7;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --accent-glow: rgba(91, 94, 244, 0.25);
+
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  --font-weight-display: 800;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
@@ -88,4 +98,14 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card hover utility */
+.card-hover {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card-hover:hover {
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--vt-c-divider-dark-1);
 }

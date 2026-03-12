@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import MedalCounter from '@/components/ui/MedalCounter.vue'
 import { useAthleteStore } from '@/stores/athlete'
 
 const store = useAthleteStore()
@@ -75,6 +76,12 @@ const prsByDiscipline = computed(() => {
         </div>
       </section>
 
+      <!-- Acumulado de medallas -->
+      <section class="medals-section">
+        <h2 class="section-title">Palmarés</h2>
+        <MedalCounter />
+      </section>
+
       <!-- Récords personales -->
       <section class="prs-section">
         <h2 class="section-title">Mejores marcas personales</h2>
@@ -146,11 +153,13 @@ const prsByDiscipline = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  padding-bottom: 100px;
 }
 
 @media (min-width: 768px) {
   .perfil {
     padding: 32px 40px;
+    padding-bottom: 40px;
   }
 }
 
@@ -169,7 +178,7 @@ const prsByDiscipline = computed(() => {
 
 .perfil__name {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: var(--font-weight-display);
   color: var(--color-heading);
   margin-bottom: 4px;
 }
@@ -191,8 +200,8 @@ const prsByDiscipline = computed(() => {
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: rgba(91, 94, 244, 0.15);
+  border: 1px solid rgba(91, 94, 244, 0.3);
   color: var(--accent-primary);
 }
 
@@ -223,11 +232,12 @@ const prsByDiscipline = computed(() => {
   border-radius: 14px;
   padding: 16px;
   text-align: center;
+  box-shadow: var(--card-shadow);
 }
 
 .stat-card__value {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: var(--font-weight-display);
   color: var(--accent-primary);
 }
 
@@ -244,13 +254,14 @@ const prsByDiscipline = computed(() => {
 }
 
 .pr-item {
-  background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(16,185,129,0.02));
-  border: 1px solid rgba(16,185,129,0.2);
+  background: var(--glass-bg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 14px;
   padding: 14px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .pr-item__discipline {
@@ -262,8 +273,8 @@ const prsByDiscipline = computed(() => {
 
 .pr-item__result {
   font-size: 20px;
-  font-weight: 800;
-  color: #10b981;
+  font-weight: var(--font-weight-display);
+  color: var(--color-success);
   flex: 1;
 }
 
@@ -277,6 +288,7 @@ const prsByDiscipline = computed(() => {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: var(--card-shadow);
 }
 
 .info-row {
@@ -308,6 +320,7 @@ const prsByDiscipline = computed(() => {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: var(--card-shadow);
 }
 
 .config-item {
@@ -328,7 +341,7 @@ const prsByDiscipline = computed(() => {
   font-size: 11px;
   font-weight: 600;
   color: var(--vt-c-text-dark-2);
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--glass-border);
   padding: 3px 8px;
   border-radius: 10px;

@@ -4,6 +4,8 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import KpiCard from '@/components/ui/KpiCard.vue'
 import SparklineChart from '@/components/charts/SparklineChart.vue'
 import SessionCard from '@/components/ui/SessionCard.vue'
+import MotivationalCard from '@/components/ui/MotivationalCard.vue'
+import AppIcon from '@/components/ui/AppIcon.vue'
 import { useAthleteStore } from '@/stores/athlete'
 
 const store = useAthleteStore()
@@ -32,15 +34,18 @@ const daysUntilCompetition = computed(() => {
         <div class="dashboard__greeting">
           <img :src="store.athlete.avatar" :alt="store.athlete.name" class="dashboard__avatar" />
           <div>
-            <p class="dashboard__hello">{{ greeting }}, {{ store.athlete.name.split(' ')[0] }} 👋</p>
+            <p class="dashboard__hello">{{ greeting }}, {{ store.athlete.name.split(' ')[0] }}</p>
             <p class="dashboard__club">{{ store.athlete.club }}</p>
           </div>
         </div>
         <div class="dashboard__badge">
-          <span>🏅</span>
+          <AppIcon name="Activity" :size="14" />
           <span>{{ store.athlete.disciplines.join(' · ') }}</span>
         </div>
       </div>
+
+      <!-- Frase motivacional del día -->
+      <MotivationalCard />
 
       <!-- KPI Cards -->
       <section class="dashboard__section">
@@ -81,7 +86,10 @@ const daysUntilCompetition = computed(() => {
       <section class="dashboard__section">
         <div class="sparkline-header">
           <h2 class="section-title">Progresión 400m</h2>
-          <RouterLink to="/marcas" class="see-all">Ver todo →</RouterLink>
+          <RouterLink to="/marcas" class="see-all">
+            Ver todo
+            <AppIcon name="ArrowRight" :size="13" />
+          </RouterLink>
         </div>
         <div class="sparkline-card">
           <div class="sparkline-card__stats">
@@ -91,7 +99,10 @@ const daysUntilCompetition = computed(() => {
             </div>
             <div>
               <p class="sparkline-card__label">Tendencia</p>
-              <p class="sparkline-card__trend">📈 Mejorando</p>
+              <p class="sparkline-card__trend">
+                <AppIcon name="TrendingUp" :size="16" />
+                Mejorando
+              </p>
             </div>
           </div>
           <SparklineChart :marks="marks400m" />
@@ -100,12 +111,12 @@ const daysUntilCompetition = computed(() => {
 
       <!-- Feed reciente -->
       <section class="dashboard__section">
-        <div class="feed-header">
-          <h2 class="section-title">Actividad reciente</h2>
-        </div>
+        <h2 class="section-title">Actividad reciente</h2>
         <div class="feed-list">
-          <div class="feed-item feed-item--mark" v-for="mark in store.recentMarks.slice(0, 3)" :key="mark.id">
-            <span class="feed-item__icon">🏆</span>
+          <div class="feed-item" v-for="mark in store.recentMarks.slice(0, 3)" :key="mark.id">
+            <div class="feed-item__icon-wrap">
+              <AppIcon name="Trophy" :size="18" />
+            </div>
             <div class="feed-item__content">
               <p class="feed-item__title">{{ mark.competition }}</p>
               <p class="feed-item__meta">{{ mark.discipline }} · {{ mark.result }}</p>
@@ -131,11 +142,13 @@ const daysUntilCompetition = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  padding-bottom: 100px;
 }
 
 @media (min-width: 768px) {
   .dashboard {
     padding: 32px 40px;
+    padding-bottom: 40px;
   }
 }
 
@@ -204,20 +217,21 @@ const daysUntilCompetition = computed(() => {
   }
 }
 
-.sparkline-header,
-.feed-header {
+.sparkline-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.sparkline-header .section-title,
-.feed-header .section-title {
+.sparkline-header .section-title {
   margin-bottom: 0;
 }
 
 .see-all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
   color: var(--accent-primary);
   text-decoration: none;
@@ -229,6 +243,7 @@ const daysUntilCompetition = computed(() => {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .sparkline-card__stats {
@@ -248,12 +263,15 @@ const daysUntilCompetition = computed(() => {
 .sparkline-card__value {
   font-size: 24px;
   font-weight: 700;
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .sparkline-card__trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 14px;
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 600;
 }
 
@@ -271,10 +289,18 @@ const daysUntilCompetition = computed(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  box-shadow: var(--card-shadow);
 }
 
-.feed-item__icon {
-  font-size: 22px;
+.feed-item__icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 215, 0, 0.1);
+  color: #FFD700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -297,7 +323,7 @@ const daysUntilCompetition = computed(() => {
 .feed-item__pr {
   font-size: 11px;
   font-weight: 700;
-  color: #10b981;
+  color: var(--color-success);
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.3);
   padding: 3px 8px;

@@ -1,266 +1,113 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
-import SessionCard from '@/components/ui/SessionCard.vue'
-import TrainingForm from '@/components/forms/TrainingForm.vue'
-import { useAthleteStore } from '@/stores/athlete'
+import { ref } from 'vue'
+import AppIcon from '@/components/ui/AppIcon.vue'
+import TabSesiones from './training/TabSesiones.vue'
+import TabHorario from './training/TabHorario.vue'
+import TabEjercicios from './training/TabEjercicios.vue'
+import TabHabitos from './training/TabHabitos.vue'
 
-const store = useAthleteStore()
-const showForm = ref(false)
+type Tab = 'sesiones' | 'horario' | 'ejercicios' | 'habitos'
+const activeTab = ref<Tab>('sesiones')
 
-const sortedSessions = computed(() =>
-  [...store.sessions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-)
-
-const weeklyVolume = computed(() => {
-  const oneWeekAgo = new Date()
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-  return store.sessions
-    .filter((s) => new Date(s.date) >= oneWeekAgo)
-    .reduce((acc, s) => acc + s.distanceKm, 0)
-    .toFixed(1)
-})
-
-const weeklyCount = computed(() => {
-  const oneWeekAgo = new Date()
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-  return store.sessions.filter((s) => new Date(s.date) >= oneWeekAgo).length
-})
-
-const typeLabels = { velocidad: 'Velocidad', fondo: 'Fondo', tecnica: 'Técnica', fuerza: 'Fuerza' }
+const tabs = [
+  { id: 'sesiones', label: 'Sesiones', icon: 'Activity' },
+  { id: 'horario', label: 'Horario', icon: 'Calendar' },
+  { id: 'ejercicios', label: 'Ejercicios', icon: 'Dumbbell' },
+  { id: 'habitos', label: 'Hábitos', icon: 'CheckCircle' }
+]
 </script>
 
 <template>
-  <AppLayout>
-    <div class="entrenamientos">
-      <div class="entrenamientos__header">
-        <h1 class="page-title">Entrenamientos</h1>
-        <p class="page-subtitle">Registro y seguimiento de tus sesiones</p>
-      </div>
+  <div class="trainings-view">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header__title">Mi Entrenamiento</h1>
+      <p class="header__subtitle">Planificación y seguimiento de sesiones</p>
+    </header>
 
-      <!-- Resumen semanal -->
-      <div class="weekly-summary">
-        <div class="weekly-stat">
-          <p class="weekly-stat__value">{{ weeklyCount }}</p>
-          <p class="weekly-stat__label">sesiones esta semana</p>
-        </div>
-        <div class="weekly-divider" />
-        <div class="weekly-stat">
-          <p class="weekly-stat__value">{{ weeklyVolume }} km</p>
-          <p class="weekly-stat__label">volumen semanal</p>
-        </div>
-        <div class="weekly-divider" />
-        <div class="weekly-stat">
-          <p class="weekly-stat__value">{{ store.kpis.streak }}</p>
-          <p class="weekly-stat__label">semanas racha</p>
-        </div>
-      </div>
-
-      <!-- Distribución por tipo -->
-      <div class="type-dist">
-        <h2 class="section-title">Distribución (últimos 30 días)</h2>
-        <div class="type-dist__grid">
-          <div
-            v-for="(count, type) in store.sessionsByType"
-            :key="type"
-            class="type-dist__item"
-          >
-            <div class="type-dist__bar-wrap">
-              <div
-                class="type-dist__bar"
-                :style="{ height: `${(count / store.sessions.length) * 100}%` }"
-              />
-            </div>
-            <p class="type-dist__count">{{ count }}</p>
-            <p class="type-dist__name">{{ typeLabels[type as keyof typeof typeLabels] }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lista de sesiones -->
-      <div class="sessions-list">
-        <h2 class="section-title">Historial de sesiones</h2>
-        <div class="sessions-list__items">
-          <SessionCard
-            v-for="session in sortedSessions"
-            :key="session.id"
-            :session="session"
-          />
-        </div>
-      </div>
-
-      <!-- FAB -->
-      <button class="fab" @click="showForm = true" aria-label="Nueva sesión">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
+    <!-- Nav Tabs -->
+    <nav class="nav-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        class="nav-tabs__item"
+        :class="{ 'nav-tabs__item--active': activeTab === tab.id }"
+        @click="activeTab = tab.id as Tab"
+      >
+        <AppIcon :name="tab.icon" :size="18" />
+        <span>{{ tab.label }}</span>
       </button>
+    </nav>
 
-      <!-- Modal formulario -->
-      <TrainingForm v-if="showForm" @close="showForm = false" />
-    </div>
-  </AppLayout>
+    <!-- Content -->
+    <main class="content">
+      <keep-alive>
+        <component :is="activeTab === 'sesiones' ? TabSesiones : 
+                        activeTab === 'horario' ? TabHorario :
+                        activeTab === 'ejercicios' ? TabEjercicios : TabHabitos" />
+      </keep-alive>
+    </main>
+  </div>
 </template>
 
 <style scoped>
-.entrenamientos {
-  padding: 24px 16px;
-  max-width: 900px;
-  margin: 0 auto;
+.trainings-view {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding-bottom: 100px;
 }
 
-@media (min-width: 768px) {
-  .entrenamientos {
-    padding: 32px 40px;
-    padding-bottom: 40px;
-  }
+.header {
+  margin-top: 10px;
 }
 
-.page-title {
+.header__title {
   font-size: 24px;
-  font-weight: 700;
-  color: var(--color-heading);
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: var(--vt-c-text-dark-2);
-  margin-top: 4px;
-}
-
-.weekly-summary {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 16px;
-}
-
-.weekly-stat {
-  text-align: center;
-}
-
-.weekly-stat__value {
-  font-size: 28px;
   font-weight: 800;
-  color: var(--accent-primary);
-}
-
-.weekly-stat__label {
-  font-size: 12px;
-  color: var(--vt-c-text-dark-2);
-  margin-top: 2px;
-}
-
-.weekly-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--glass-border);
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--vt-c-text-dark-2);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 12px;
-}
-
-.type-dist__grid {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  align-items: end;
-}
-
-.type-dist__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.type-dist__bar-wrap {
-  width: 32px;
-  height: 80px;
-  background: var(--glass-border);
-  border-radius: 6px;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-}
-
-.type-dist__bar {
-  width: 100%;
-  background: var(--accent-primary);
-  border-radius: 6px;
-  min-height: 4px;
-  transition: height 0.6s ease;
-}
-
-.type-dist__count {
-  font-size: 16px;
-  font-weight: 700;
   color: var(--color-heading);
 }
 
-.type-dist__name {
-  font-size: 11px;
+.header__subtitle {
+  font-size: 14px;
   color: var(--vt-c-text-dark-2);
-  text-align: center;
 }
 
-.sessions-list__items {
+.nav-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
 }
 
-.fab {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--accent-primary);
-  color: white;
-  border: none;
-  cursor: pointer;
+.nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-tabs__item {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-  z-index: 30;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 10px 16px;
+  border-radius: 12px;
+  color: var(--vt-c-text-dark-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.fab:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
+.nav-tabs__item--active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 60, 4, 0.2);
 }
 
-.fab svg {
-  width: 28px;
-  height: 28px;
-}
-
-@media (min-width: 768px) {
-  .fab {
-    bottom: 32px;
-    right: 40px;
-  }
+.content {
+  min-height: 400px;
 }
 </style>
