@@ -80,3 +80,4 @@ examples/sessions/*.tmp
 *.rej
 *.timestamp-*-*.mjs
 *.tsbuildinfo
+.vercel
