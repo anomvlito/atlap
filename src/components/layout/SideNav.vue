@@ -1,10 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useAuth, useUser } from '@clerk/vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { useAthleteStore } from '@/stores/athlete'
+import { useCurrentUser } from '@/composables/useCurrentUser'
 
 const route = useRoute()
-const store = useAthleteStore()
+const { signOut } = useAuth()
+const { user } = useUser()
+const { dbUser } = useCurrentUser()
+
+const displayName = computed(() => dbUser.value?.fullName || user.value?.firstName || 'Atleta')
+const displaySub  = computed(() => {
+  const disc = dbUser.value?.discipline
+  return disc ? disc.split(',')[0] : (user.value?.primaryEmailAddress?.emailAddress ?? '')
+})
 
 const navItems = [
   { name: 'Dashboard', path: '/', icon: 'Home' },
@@ -40,14 +50,18 @@ const navItems = [
 
     <div class="sidebar__footer">
       <div class="user-info">
-        <img :src="store.athlete.avatar" :alt="store.athlete.name" class="user-avatar" />
+        <img
+          :src="user?.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`"
+          :alt="displayName"
+          class="user-avatar"
+        />
         <div class="user-details">
-          <p class="user-name">{{ store.athlete.name }}</p>
-          <p class="user-club">{{ store.athlete.club }}</p>
+          <p class="user-name">{{ displayName }}</p>
+          <p class="user-club">{{ displaySub }}</p>
         </div>
       </div>
-      <button class="settings-btn">
-        <AppIcon name="Settings" :size="20" />
+      <button class="settings-btn" title="Cerrar sesión" @click="signOut()">
+        <AppIcon name="LogOut" :size="20" />
       </button>
     </div>
   </aside>

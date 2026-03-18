@@ -1,149 +1,130 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAuth, useUser } from '@clerk/vue'
 import MedalCounter from '@/components/ui/MedalCounter.vue'
-import { useAthleteStore } from '@/stores/athlete'
-import { getDisciplineConfig } from '@/types/discipline'
+import AppIcon from '@/components/ui/AppIcon.vue'
+import { useCurrentUser } from '@/composables/useCurrentUser'
 
-const store = useAthleteStore()
+const { signOut } = useAuth()
+const { user } = useUser()
+const { dbUser } = useCurrentUser()
 
-const totalCompetitions = computed(() => store.marks.length)
+const displayName = computed(() => dbUser.value?.fullName || user.value?.firstName || 'Atleta')
 
-const prs = computed(() => store.marks.filter((m) => m.isPR).length)
+const disciplines = computed(() => {
+  const disc = dbUser.value?.discipline
+  return disc ? disc.split(',').map(d => d.trim()).filter(Boolean) : []
+})
 
 const age = computed(() => {
-  const birth = new Date(store.athlete.birthDate)
+  const birth = dbUser.value?.birthDate
+  if (!birth) return null
   const now = new Date()
-  return Math.floor((now.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25))
+  return Math.floor((now.getTime() - new Date(birth).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
 })
 
-const prsByDiscipline = computed(() => {
-  const result: Record<string, { result: string; date: string }> = {}
-  for (const disc of store.athlete.disciplines) {
-    const discMarks = store.marks.filter((m) => m.discipline === disc)
-    if (discMarks.length === 0) continue
-    const config = getDisciplineConfig(disc)
-    const betterIs = config?.betterIs ?? 'lower'
-    const best = discMarks.reduce((b, m) =>
-      betterIs === 'lower' ? (m.resultValue < b.resultValue ? m : b) : (m.resultValue > b.resultValue ? m : b)
-    )
-    result[disc] = { result: best.result, date: best.date }
-  }
-  return result
-})
+const avatarUrl = computed(
+  () => user.value?.imageUrl
+    || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName.value}`
+)
 </script>
 
 <template>
   <div class="perfil">
-      <!-- Hero perfil -->
-      <div class="perfil__hero">
-        <img
-          :src="store.athlete.avatar"
-          :alt="store.athlete.name"
-          class="perfil__avatar"
-        />
-        <div class="perfil__info">
-          <h1 class="perfil__name">{{ store.athlete.name }}</h1>
-          <p class="perfil__club">{{ store.athlete.club }}</p>
-          <div class="perfil__disciplines">
-            <span
-              v-for="disc in store.athlete.disciplines"
-              :key="disc"
-              class="discipline-chip"
-            >
-              {{ disc }}
-            </span>
-          </div>
+    <!-- Hero perfil -->
+    <div class="perfil__hero">
+      <img :src="avatarUrl" :alt="displayName" class="perfil__avatar" />
+      <div class="perfil__info">
+        <h1 class="perfil__name">{{ displayName }}</h1>
+        <div class="perfil__disciplines">
+          <span v-if="disciplines.length === 0" class="discipline-chip discipline-chip--empty">
+            Sin disciplinas
+          </span>
+          <span v-for="disc in disciplines" :key="disc" class="discipline-chip">
+            {{ disc }}
+          </span>
         </div>
       </div>
+    </div>
 
-      <!-- Stats de carrera -->
-      <section class="stats-section">
-        <h2 class="section-title">Stats de carrera</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <p class="stat-card__value">{{ store.athlete.yearsActive }}</p>
-            <p class="stat-card__label">Años activo</p>
-          </div>
-          <div class="stat-card">
-            <p class="stat-card__value">{{ totalCompetitions }}</p>
-            <p class="stat-card__label">Competencias</p>
-          </div>
-          <div class="stat-card">
-            <p class="stat-card__value">{{ prs }}</p>
-            <p class="stat-card__label">Records personales</p>
-          </div>
-          <div class="stat-card">
-            <p class="stat-card__value">{{ age }}</p>
-            <p class="stat-card__label">Años de edad</p>
-          </div>
+    <!-- Stats básicos -->
+    <section class="stats-section">
+      <h2 class="section-title">Tu perfil</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-card__value">{{ age ?? '—' }}</p>
+          <p class="stat-card__label">Años de edad</p>
         </div>
-      </section>
-
-      <!-- Acumulado de medallas -->
-      <section class="medals-section">
-        <h2 class="section-title">Palmarés</h2>
-        <MedalCounter />
-      </section>
-
-      <!-- Récords personales -->
-      <section class="prs-section">
-        <h2 class="section-title">Mejores marcas personales</h2>
-        <div class="prs-list">
-          <div
-            v-for="(data, disc) in prsByDiscipline"
-            :key="disc"
-            class="pr-item"
-          >
-            <div class="pr-item__discipline">{{ disc }}</div>
-            <div class="pr-item__result">{{ data.result }}</div>
-            <div class="pr-item__date">
-              {{ new Date(data.date).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' }) }}
-            </div>
-          </div>
+        <div class="stat-card">
+          <p class="stat-card__value">{{ dbUser?.height ? `${dbUser.height} cm` : '—' }}</p>
+          <p class="stat-card__label">Estatura</p>
         </div>
-      </section>
-
-      <!-- Info personal -->
-      <section class="info-section">
-        <h2 class="section-title">Información personal</h2>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Nombre completo</span>
-            <span class="info-value">{{ store.athlete.name }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Fecha de nacimiento</span>
-            <span class="info-value">{{ new Date(store.athlete.birthDate).toLocaleDateString('es-CL') }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Club</span>
-            <span class="info-value">{{ store.athlete.club }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Disciplinas</span>
-            <span class="info-value">{{ store.athlete.disciplines.join(', ') }}</span>
-          </div>
+        <div class="stat-card">
+          <p class="stat-card__value">{{ disciplines.length || '—' }}</p>
+          <p class="stat-card__label">Disciplinas</p>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Configuración placeholder -->
-      <section class="config-section">
-        <h2 class="section-title">Configuración</h2>
-        <div class="config-list">
-          <div class="config-item">
-            <span>Notificaciones de entrenamiento</span>
-            <span class="config-badge">Próximamente</span>
-          </div>
-          <div class="config-item">
-            <span>Sincronizar wearables</span>
-            <span class="config-badge">Próximamente</span>
-          </div>
-          <div class="config-item">
-            <span>Exportar datos</span>
-            <span class="config-badge">Próximamente</span>
-          </div>
+    <!-- Palmarés demo -->
+    <section class="medals-section">
+      <h2 class="section-title">Palmarés (demo)</h2>
+      <MedalCounter />
+    </section>
+
+    <!-- Información personal -->
+    <section class="info-section">
+      <h2 class="section-title">Información personal</h2>
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Nombre completo</span>
+          <span class="info-value">{{ dbUser?.fullName || '—' }}</span>
         </div>
-      </section>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ user?.primaryEmailAddress?.emailAddress || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha de nacimiento</span>
+          <span class="info-value">
+            {{ dbUser?.birthDate ? new Date(dbUser.birthDate).toLocaleDateString('es-CL') : '—' }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Género</span>
+          <span class="info-value" style="text-transform: capitalize">{{ dbUser?.gender || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Disciplinas</span>
+          <span class="info-value">{{ disciplines.join(', ') || '—' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Configuración -->
+    <section class="config-section">
+      <h2 class="section-title">Configuración</h2>
+      <div class="config-list">
+        <div class="config-item">
+          <span>Notificaciones de entrenamiento</span>
+          <span class="config-badge">Próximamente</span>
+        </div>
+        <div class="config-item">
+          <span>Sincronizar wearables</span>
+          <span class="config-badge">Próximamente</span>
+        </div>
+        <div class="config-item">
+          <span>Exportar datos</span>
+          <span class="config-badge">Próximamente</span>
+        </div>
+        <button class="config-item config-item--danger" @click="signOut()">
+          <span class="signout-label">
+            <AppIcon name="LogOut" :size="16" />
+            Cerrar sesión
+          </span>
+        </button>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -160,42 +141,41 @@ const prsByDiscipline = computed(() => {
 
 @media (min-width: 1024px) {
   .perfil {
-    max-width: 1100px;
-    padding: 40px;
+    max-width: 900px;
+    padding: 40px 40px 60px;
     display: grid;
-    grid-template-columns: 350px 1fr;
-    grid-template-areas: 
-      "hero summary"
-      "hero medals"
-      "prs medals"
-      "info prs"
-      "config config";
-    gap: 40px;
+    grid-template-columns: 300px 1fr;
+    grid-template-areas:
+      "hero   stats"
+      "medals info"
+      "medals config";
+    gap: 32px;
   }
-  
+
+  .perfil__hero    { grid-area: hero; }
+  .stats-section   { grid-area: stats; }
+  .medals-section  { grid-area: medals; }
+  .info-section    { grid-area: info; }
+  .config-section  { grid-area: config; }
+
   .perfil__hero {
-    grid-area: hero;
     flex-direction: column;
     text-align: center;
-    padding: 32px;
+    padding: 28px 20px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    height: fit-content;
+    border-radius: 20px;
+    align-self: start;
   }
-  
+
   .perfil__avatar {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
   }
-  
-  .stats-section { grid-area: summary; }
-  .medals-section { grid-area: medals; }
-  .prs-section { grid-area: prs; }
-  .info-section { grid-area: info; }
-  .config-section { grid-area: config; }
 }
 
+/* Hero */
 .perfil__hero {
   display: flex;
   align-items: center;
@@ -203,23 +183,18 @@ const prsByDiscipline = computed(() => {
 }
 
 .perfil__avatar {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border: 3px solid var(--accent-primary);
+  flex-shrink: 0;
 }
 
 .perfil__name {
   font-size: 22px;
-  font-weight: var(--font-weight-display);
+  font-weight: 800;
   color: var(--color-heading);
-  margin-bottom: 4px;
-}
-
-.perfil__club {
-  font-size: 14px;
-  color: var(--vt-c-text-dark-2);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .perfil__disciplines {
@@ -233,30 +208,33 @@ const prsByDiscipline = computed(() => {
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(91, 94, 244, 0.15);
-  border: 1px solid rgba(91, 94, 244, 0.3);
+  background: rgba(91, 94, 244, 0.12);
+  border: 1px solid rgba(91, 94, 244, 0.25);
   color: var(--accent-primary);
 }
 
+.discipline-chip--empty {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* Section title */
 .section-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 12px;
 }
 
+/* Stats */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-}
-
-@media (min-width: 480px) {
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .stat-card {
@@ -269,53 +247,18 @@ const prsByDiscipline = computed(() => {
 }
 
 .stat-card__value {
-  font-size: 28px;
-  font-weight: var(--font-weight-display);
+  font-size: 22px;
+  font-weight: 800;
   color: var(--accent-primary);
 }
 
 .stat-card__label {
   font-size: 11px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
-.prs-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.pr-item {
-  background: var(--glass-bg);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: var(--card-shadow);
-}
-
-.pr-item__discipline {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-heading);
-  min-width: 50px;
-}
-
-.pr-item__result {
-  font-size: 20px;
-  font-weight: var(--font-weight-display);
-  color: var(--color-success);
-  flex: 1;
-}
-
-.pr-item__date {
-  font-size: 12px;
-  color: var(--vt-c-text-dark-2);
-}
-
+/* Info card */
 .info-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -327,7 +270,7 @@ const prsByDiscipline = computed(() => {
 .info-row {
   display: flex;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 13px 16px;
   border-bottom: 1px solid var(--glass-border);
   gap: 12px;
 }
@@ -338,7 +281,8 @@ const prsByDiscipline = computed(() => {
 
 .info-label {
   font-size: 13px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
 
 .info-value {
@@ -346,8 +290,12 @@ const prsByDiscipline = computed(() => {
   font-weight: 600;
   color: var(--color-heading);
   text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Config list */
 .config-list {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -364,17 +312,45 @@ const prsByDiscipline = computed(() => {
   border-bottom: 1px solid var(--glass-border);
   font-size: 14px;
   color: var(--color-heading);
+  width: 100%;
+  background: none;
+  border-left: none;
+  border-right: none;
+  cursor: default;
+  font-family: inherit;
+  text-align: left;
+}
+
+.config-item:first-child {
+  border-top: none;
 }
 
 .config-item:last-child {
   border-bottom: none;
 }
 
+.config-item--danger {
+  cursor: pointer;
+  color: #ef4444;
+  transition: background 0.2s;
+}
+
+.config-item--danger:hover {
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.signout-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
 .config-badge {
   font-size: 11px;
   font-weight: 600;
-  color: var(--vt-c-text-dark-2);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   padding: 3px 8px;
   border-radius: 10px;
