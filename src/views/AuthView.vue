@@ -1,54 +1,76 @@
 <script setup lang="ts">
 import { SignIn } from '@clerk/vue'
+import { dark } from '@clerk/themes'
 
-// colorBackground de Clerk = fondo del card (no de la página).
-// Página es #06060c → card es #13131e → contraste visible.
+// Base: dark oficial de Clerk (resuelve inputs blancos, contraste interno, etc.)
+// Override: colores ATLAP encima
 const clerkAppearance = {
+  baseTheme: dark,
   variables: {
-    colorBackground:      '#13131e',
-    colorInputBackground: 'rgba(255, 255, 255, 0.07)',
-    colorText:            '#f0f0f8',
-    colorTextSecondary:   '#94a3b8',
-    colorPrimary:         '#5b5ef4',
-    colorInputText:       '#f0f0f8',
-    colorNeutral:         '#f0f0f8',
-    borderRadius:         '14px',
-    fontFamily:           'Inter, sans-serif',
-    fontSize:             '15px',
+    colorBackground:  '#111120',   // card — claramente diferente al fondo (#070710)
+    colorPrimary:     '#5b5ef4',
+    colorText:        '#f1f1f8',
+    colorTextSecondary: '#94a3b8',
+    colorInputText:   '#f1f1f8',
+    colorInputBackground: '#1a1a2e',  // hex, no rgba — Clerk lo acepta correctamente
+    borderRadius:     '14px',
+    fontFamily:       'Inter, sans-serif',
+    fontSize:         '15px',
+    colorNeutral:     '#f1f1f8',
   },
   elements: {
-    card:                     'atlap-clerk-card',
-    formButtonPrimary:        'atlap-clerk-btn',
-    footerActionLink:         'atlap-clerk-link',
-    socialButtonsBlockButton: 'atlap-clerk-social-btn',
-    formFieldInput:           'atlap-clerk-input',
+    // Card con borde visible
+    card: {
+      backgroundColor: '#111120',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 0 0 1px rgba(91,94,244,0.12), 0 28px 64px rgba(0,0,0,0.8)',
+    },
+    // Header de Clerk — ocultar "Sign in to My Application" ya que tenemos nuestra brand arriba
+    headerTitle:    { display: 'none' },
+    headerSubtitle: { display: 'none' },
+    // Inputs oscuros con borde sutil
+    formFieldInput: {
+      backgroundColor: '#1a1a2e',
+      borderColor: 'rgba(255,255,255,0.12)',
+      color: '#f1f1f8',
+    },
+    // Social buttons
+    socialButtonsBlockButton: {
+      backgroundColor: 'rgba(255,255,255,0.05)',
+      borderColor: 'rgba(255,255,255,0.1)',
+    },
+    // Footer link
+    footerActionLink: { color: '#5b5ef4' },
   },
 }
 </script>
 
 <template>
   <div class="auth-page">
-    <!-- Glows de fondo -->
-    <div class="auth-glow auth-glow--top" aria-hidden="true" />
-    <div class="auth-glow auth-glow--bottom" aria-hidden="true" />
+    <!-- Glows atmosféricos -->
+    <div class="glow glow--purple" aria-hidden="true" />
+    <div class="glow glow--indigo" aria-hidden="true" />
 
-    <div class="auth-content">
+    <div class="auth-shell">
       <!-- Brand -->
-      <div class="auth-brand">
-        <span class="auth-logo">ATLAP</span>
-        <p class="auth-tagline">Tu rendimiento, en datos</p>
-      </div>
+      <header class="auth-header">
+        <h1 class="auth-title">ATLAP</h1>
+        <p class="auth-sub">Registra. Analiza. Mejora.</p>
+      </header>
 
-      <!-- Clerk card -->
-      <SignIn :appearance="clerkAppearance" routing="hash" />
+      <!-- Clerk sign-in -->
+      <div class="clerk-wrap">
+        <SignIn :appearance="clerkAppearance" routing="hash" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* ── Página ─────────────────────────────────────────── */
 .auth-page {
   min-height: 100vh;
-  background: #06060c;
+  background: #070710;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,105 +79,72 @@ const clerkAppearance = {
   overflow: hidden;
 }
 
-.auth-glow {
+/* ── Glows de fondo ─────────────────────────────────── */
+.glow {
   position: absolute;
   pointer-events: none;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(100px);
+  opacity: 0.5;
 }
 
-.auth-glow--top {
-  width: 600px;
+.glow--indigo {
+  width: 700px;
   height: 400px;
-  top: -120px;
+  top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(91, 94, 244, 0.18) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(91, 94, 244, 0.3) 0%, transparent 65%);
 }
 
-.auth-glow--bottom {
+.glow--purple {
   width: 400px;
   height: 300px;
-  bottom: -80px;
-  right: 10%;
-  background: radial-gradient(ellipse, rgba(168, 85, 247, 0.10) 0%, transparent 70%);
+  bottom: -60px;
+  right: 5%;
+  background: radial-gradient(ellipse, rgba(168, 85, 247, 0.2) 0%, transparent 65%);
 }
 
-.auth-content {
+/* ── Contenedor central ──────────────────────────────── */
+.auth-shell {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.75rem;
+  gap: 2rem;
   width: 100%;
+  max-width: 420px;
 }
 
-.auth-brand {
+/* ── Brand ──────────────────────────────────────────── */
+.auth-header {
   text-align: center;
 }
 
-.auth-logo {
-  display: block;
+.auth-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #ffffff 30%, #5b5ef4 100%);
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #ffffff 20%, #5b5ef4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
 }
 
-.auth-tagline {
-  margin-top: 0.3rem;
+.auth-sub {
+  margin-top: 0.4rem;
   font-size: 0.9rem;
-  color: #64748b;
-  letter-spacing: 0.02em;
-}
-</style>
-
-<!-- Estilos globales para el interior del componente Clerk (no puede ser scoped) -->
-<style>
-/* Card principal */
-.atlap-clerk-card {
-  background: #13131e !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow:
-    0 0 0 1px rgba(91, 94, 244, 0.08),
-    0 24px 64px rgba(0, 0, 0, 0.7) !important;
+  color: #4a5568;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
-/* Inputs */
-.atlap-clerk-input {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-.atlap-clerk-input:focus {
-  border-color: rgba(91, 94, 244, 0.6) !important;
-  box-shadow: 0 0 0 3px rgba(91, 94, 244, 0.12) !important;
-}
-
-/* Botón primario */
-.atlap-clerk-btn {
-  background: #5b5ef4 !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 14px rgba(91, 94, 244, 0.35) !important;
-}
-.atlap-clerk-btn:hover {
-  background: #4a4dd4 !important;
-}
-
-/* Links */
-.atlap-clerk-link {
-  color: #5b5ef4 !important;
-}
-
-/* Social buttons */
-.atlap-clerk-social-btn {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-.atlap-clerk-social-btn:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+/* ── Clerk wrapper ───────────────────────────────────── */
+.clerk-wrap {
+  width: 100%;
 }
 </style>

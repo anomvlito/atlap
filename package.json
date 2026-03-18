@@ -19,6 +19,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@clerk/themes": "^2.4.57",
     "@clerk/vue": "^2.0.5",
     "@neondatabase/serverless": "^1.0.2",
     "@supabase/supabase-js": "^2.99.1",
