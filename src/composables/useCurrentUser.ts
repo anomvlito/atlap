@@ -3,7 +3,15 @@ import { useUser } from '@clerk/vue';
 import { neon } from '@neondatabase/serverless';
 import { getDisciplineConfig, type SportGroup } from '@/types/discipline';
 
-const sql = neon(import.meta.env.VITE_DATABASE_URL);
+let _sql: ReturnType<typeof neon> | null = null;
+function getSql() {
+  if (!_sql) {
+    const url = import.meta.env.VITE_DATABASE_URL;
+    if (!url) throw new Error('VITE_DATABASE_URL no está configurada');
+    _sql = neon(url);
+  }
+  return _sql;
+}
 
 export interface DbUser {
   id: string;
@@ -53,10 +61,10 @@ export function useCurrentUser() {
   });
 
   async function fetchUser(clerkId: string): Promise<DbUser | null> {
-    const rows = await sql`
+    const rows = (await getSql()`
       SELECT id, clerk_id, email, full_name, role, birth_date, height, gender, discipline, onboarded, created_at, updated_at
       FROM users WHERE clerk_id = ${clerkId} LIMIT 1
-    `;
+    `) as Record<string, unknown>[];
     if (!rows.length) return null;
     const r = rows[0] as Record<string, unknown>;
     return {
@@ -93,7 +101,7 @@ export function useCurrentUser() {
 
     const birthDate = data.birthDate || null;
     const height = data.height || null;
-    await sql`
+    await getSql()`
       INSERT INTO users (clerk_id, email, full_name, birth_date, height, gender, discipline, onboarded)
       VALUES (${clerkUser.id}, ${email}, ${data.fullName}, ${birthDate}, ${height}, ${data.gender}, ${data.discipline}, TRUE)
       ON CONFLICT (clerk_id) DO UPDATE SET
