@@ -31,44 +31,44 @@ function handleSaveSensations(sensations: MarkSensations) {
 
 <template>
   <div class="marks-view">
-    <header class="header">
-      <h1 class="header__title">Mis Marcas</h1>
-      <p class="header__subtitle">Evolución de récords personales</p>
-    </header>
+      <header class="header">
+        <h1 class="header__title">Mis Marcas</h1>
+        <p class="header__subtitle">Evolución de récords personales</p>
+      </header>
 
-    <div class="marks-grid">
-      <div v-for="event in events" :key="event" class="event-group">
-        <h2 class="event-group__title">{{ event }}</h2>
-        
-        <div class="mark-list">
-          <div 
-            v-for="mark in filteredBests(event)" 
-            :key="mark.id" 
-            class="mark-card"
-            @click="openMarkDetails(mark)"
-          >
-            <div class="mark-card__main">
-              <span class="value">{{ mark.result }}</span>
-              <span class="date">{{ mark.date }}</span>
-            </div>
-            
-            <div class="mark-card__indicators">
-              <span v-if="mark.isPR" class="pr-badge">PR</span>
-              <AppIcon v-if="mark.sensations" name="MessageSquare" :size="14" class="text-blue" />
-              <AppIcon name="ChevronRight" :size="16" class="text-muted" />
+      <div class="marks-grid">
+        <div v-for="event in events" :key="event" class="event-group">
+          <h2 class="event-group__title">{{ event }}</h2>
+          
+          <div class="mark-list">
+            <div 
+              v-for="mark in filteredBests(event)" 
+              :key="mark.id" 
+              class="mark-card"
+              @click="openMarkDetails(mark)"
+            >
+              <div class="mark-card__main">
+                <span class="value">{{ mark.result }}</span>
+                <span class="date">{{ mark.date }}</span>
+              </div>
+              
+              <div class="mark-card__indicators">
+                <span v-if="mark.isPR" class="pr-badge">PR</span>
+                <AppIcon v-if="mark.sensations" name="MessageSquare" :size="14" class="text-blue" />
+                <AppIcon name="ChevronRight" :size="16" class="text-muted" />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Modal de sensaciones -->
-    <MarkSensationsForm
-      v-if="selectedMark"
-      :mark="selectedMark"
-      @save="handleSaveSensations"
-      @close="selectedMark = null"
-    />
+      <!-- Modal de sensaciones -->
+      <MarkSensationsForm
+        v-if="selectedMark"
+        :mark="selectedMark"
+        @save="handleSaveSensations"
+        @close="selectedMark = null"
+      />
   </div>
 </template>
 
@@ -118,6 +118,12 @@ function handleSaveSensations(sensations: MarkSensations) {
 @media (min-width: 768px) {
   .mark-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .mark-list {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

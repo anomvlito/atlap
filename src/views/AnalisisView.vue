@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import CompareChart from '@/components/charts/CompareChart.vue'
 import { useAthleteStore } from '@/stores/athlete'
 import {
@@ -128,8 +127,7 @@ const trend = computed(() => {
 </script>
 
 <template>
-  <AppLayout>
-    <div class="analisis">
+  <div class="analisis">
       <div class="analisis__header">
         <h1 class="page-title">Análisis</h1>
         <p class="page-subtitle">Métricas avanzadas y comparativas</p>
@@ -189,8 +187,7 @@ const trend = computed(() => {
           </div>
         </div>
       </div>
-    </div>
-  </AppLayout>
+  </div>
 </template>
 
 <style scoped>
@@ -203,10 +200,25 @@ const trend = computed(() => {
   gap: 24px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .analisis {
     padding: 32px 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 
+      "header header"
+      "banner banner"
+      "annual rivals"
+      "doughnut annual" /* Adjusted for flow */
+      "doughnut rivals";
+    gap: 32px;
   }
+  
+  .analisis__header { grid-area: header; }
+  .trend-banner { grid-area: banner; }
+  .chart-card:nth-of-type(1) { grid-area: annual; }
+  .chart-card:nth-of-type(2) { grid-area: rivals; }
+  .chart-card:nth-of-type(3) { grid-area: doughnut; }
 }
 
 .page-title {

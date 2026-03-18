@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import MedalCounter from '@/components/ui/MedalCounter.vue'
 import { useAthleteStore } from '@/stores/athlete'
 
@@ -29,8 +28,7 @@ const prsByDiscipline = computed(() => {
 </script>
 
 <template>
-  <AppLayout>
-    <div class="perfil">
+  <div class="perfil">
       <!-- Hero perfil -->
       <div class="perfil__hero">
         <img
@@ -141,8 +139,7 @@ const prsByDiscipline = computed(() => {
           </div>
         </div>
       </section>
-    </div>
-  </AppLayout>
+  </div>
 </template>
 
 <style scoped>
@@ -156,11 +153,42 @@ const prsByDiscipline = computed(() => {
   padding-bottom: 100px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .perfil {
-    padding: 32px 40px;
-    padding-bottom: 40px;
+    max-width: 1100px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    grid-template-areas: 
+      "hero summary"
+      "hero medals"
+      "prs medals"
+      "info prs"
+      "config config";
+    gap: 40px;
   }
+  
+  .perfil__hero {
+    grid-area: hero;
+    flex-direction: column;
+    text-align: center;
+    padding: 32px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    height: fit-content;
+  }
+  
+  .perfil__avatar {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .stats-section { grid-area: summary; }
+  .medals-section { grid-area: medals; }
+  .prs-section { grid-area: prs; }
+  .info-section { grid-area: info; }
+  .config-section { grid-area: config; }
 }
 
 .perfil__hero {

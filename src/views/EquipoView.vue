@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import AthleteCard from '@/components/ui/AthleteCard.vue'
 import { useAthleteStore } from '@/stores/athlete'
 
@@ -40,8 +39,7 @@ const feedMessages = [
 </script>
 
 <template>
-  <AppLayout>
-    <div class="equipo">
+  <div class="equipo">
       <div class="equipo__header">
         <h1 class="page-title">Mi Equipo</h1>
         <p class="page-subtitle">Colaboración con tu cuerpo técnico</p>
@@ -103,8 +101,7 @@ const feedMessages = [
           </div>
         </div>
       </div>
-    </div>
-  </AppLayout>
+  </div>
 </template>
 
 <style scoped>
@@ -117,9 +114,25 @@ const feedMessages = [
   gap: 28px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .equipo {
     padding: 32px 40px;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    grid-template-areas: 
+      "header header"
+      "feeling feeling"
+      "members feed";
+    gap: 32px;
+  }
+  
+  .equipo__header { grid-area: header; }
+  .weekly-state { grid-area: feeling; }
+  .team-section { grid-area: members; }
+  .feed-section { grid-area: feed; }
+  
+  .team-grid {
+    grid-template-columns: 1fr; /* Stack members when side by side with feed */
   }
 }
 

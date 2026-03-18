@@ -1,34 +1,52 @@
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core'
-import SidebarNav from './SidebarNav.vue'
+import SideNav from './SideNav.vue'
 import BottomNav from './BottomNav.vue'
 
-const isDesktop = useMediaQuery('(min-width: 768px)')
+const isDesktop = useMediaQuery('(min-width: 1024px)')
 </script>
 
 <template>
-  <div class="app-layout" :class="{ 'app-layout--desktop': isDesktop }">
-    <SidebarNav v-if="isDesktop" />
-    <main class="app-layout__main" :class="{ 'app-layout__main--with-sidebar': isDesktop }">
-      <slot />
-    </main>
-    <BottomNav v-if="!isDesktop" />
+  <div class="app-layout">
+    <SideNav v-if="isDesktop" class="sidebar-wrapper" />
+    
+    <div class="layout-body" :class="{ 'layout-body--desktop': isDesktop }">
+      <main class="page-content">
+        <slot />
+      </main>
+      <BottomNav v-if="!isDesktop" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .app-layout {
+  display: flex;
   min-height: 100vh;
-  background: var(--color-background);
+  background-color: var(--vt-c-black);
 }
 
-.app-layout__main {
-  padding-bottom: 80px; /* espacio para bottom nav */
+.sidebar-wrapper {
+  flex-shrink: 0;
 }
 
-.app-layout__main--with-sidebar {
-  margin-left: 240px;
-  padding-bottom: 0;
-  min-height: 100vh;
+.layout-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+.page-content {
+  flex: 1;
+  width: 100%;
+  padding-bottom: 100px; /* Space for BottomNav */
+}
+
+@media (min-width: 1024px) {
+  .page-content {
+    padding-bottom: 0;
+  }
 }
 </style>

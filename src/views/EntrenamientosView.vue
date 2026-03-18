@@ -1,113 +1,174 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import TrainingForm from '@/components/forms/TrainingForm.vue'
+import TabSesiones from '@/components/entrenamientos/TabSesiones.vue'
+import TabHorario from '@/components/entrenamientos/TabHorario.vue'
+import TabEjercicios from '@/components/entrenamientos/TabEjercicios.vue'
+import TabHabitos from '@/components/entrenamientos/TabHabitos.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import TabSesiones from './training/TabSesiones.vue'
-import TabHorario from './training/TabHorario.vue'
-import TabEjercicios from './training/TabEjercicios.vue'
-import TabHabitos from './training/TabHabitos.vue'
 
-type Tab = 'sesiones' | 'horario' | 'ejercicios' | 'habitos'
-const activeTab = ref<Tab>('sesiones')
+type TabKey = 'sesiones' | 'horario' | 'ejercicios' | 'habitos'
 
-const tabs = [
-  { id: 'sesiones', label: 'Sesiones', icon: 'Activity' },
-  { id: 'horario', label: 'Horario', icon: 'Calendar' },
-  { id: 'ejercicios', label: 'Ejercicios', icon: 'Dumbbell' },
-  { id: 'habitos', label: 'Hábitos', icon: 'CheckCircle' }
+const activeTab = ref<TabKey>('sesiones')
+const showForm = ref(false)
+
+const tabs: { key: TabKey; label: string; icon: string }[] = [
+  { key: 'sesiones', label: 'Sesiones', icon: 'Activity' },
+  { key: 'horario', label: 'Horario', icon: 'Calendar' },
+  { key: 'ejercicios', label: 'Ejercicios', icon: 'Dumbbell' },
+  { key: 'habitos', label: 'Hábitos', icon: 'RefreshCw' },
 ]
 </script>
 
 <template>
-  <div class="trainings-view">
-    <!-- Header -->
-    <header class="header">
-      <h1 class="header__title">Mi Entrenamiento</h1>
-      <p class="header__subtitle">Planificación y seguimiento de sesiones</p>
-    </header>
+  <div class="entrenamientos">
+      <div class="entrenamientos__header">
+        <h1 class="page-title">Entrenamientos</h1>
+        <p class="page-subtitle">Registro y seguimiento de tu preparación</p>
+      </div>
 
-    <!-- Nav Tabs -->
-    <nav class="nav-tabs">
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          class="tab-btn"
+          :class="{ 'tab-btn--active': activeTab === tab.key }"
+          @click="activeTab = tab.key"
+        >
+          <AppIcon :name="tab.icon" :size="15" />
+          <span>{{ tab.label }}</span>
+        </button>
+      </div>
+
+      <!-- v-show preserva el estado de los filtros entre tabs -->
+      <div v-show="activeTab === 'sesiones'">
+        <TabSesiones />
+      </div>
+      <div v-show="activeTab === 'horario'">
+        <TabHorario />
+      </div>
+      <div v-show="activeTab === 'ejercicios'">
+        <TabEjercicios />
+      </div>
+      <div v-show="activeTab === 'habitos'">
+        <TabHabitos />
+      </div>
+
+      <!-- FAB solo en sesiones -->
       <button
-        v-for="tab in tabs"
-        :key="tab.id"
-        class="nav-tabs__item"
-        :class="{ 'nav-tabs__item--active': activeTab === tab.id }"
-        @click="activeTab = tab.id as Tab"
+        v-if="activeTab === 'sesiones'"
+        class="fab"
+        @click="showForm = true"
+        aria-label="Nueva sesión"
       >
-        <AppIcon :name="tab.icon" :size="18" />
-        <span>{{ tab.label }}</span>
+        <AppIcon name="Plus" :size="26" />
       </button>
-    </nav>
 
-    <!-- Content -->
-    <main class="content">
-      <keep-alive>
-        <component :is="activeTab === 'sesiones' ? TabSesiones : 
-                        activeTab === 'horario' ? TabHorario :
-                        activeTab === 'ejercicios' ? TabEjercicios : TabHabitos" />
-      </keep-alive>
-    </main>
+      <TrainingForm v-if="showForm" @close="showForm = false" />
   </div>
 </template>
 
 <style scoped>
-.trainings-view {
+.entrenamientos {
+  padding: 24px 16px;
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+  padding-bottom: 100px;
 }
 
-.header {
-  margin-top: 10px;
+@media (min-width: 768px) {
+  .entrenamientos {
+    padding: 32px 40px;
+    padding-bottom: 40px;
+  }
 }
 
-.header__title {
+.page-title {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: var(--font-weight-display);
   color: var(--color-heading);
 }
 
-.header__subtitle {
+.page-subtitle {
   font-size: 14px;
   color: var(--vt-c-text-dark-2);
+  margin-top: 4px;
 }
 
-.nav-tabs {
+.tab-bar {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 5px;
   overflow-x: auto;
-  padding-bottom: 8px;
   scrollbar-width: none;
 }
 
-.nav-tabs::-webkit-scrollbar {
+.tab-bar::-webkit-scrollbar {
   display: none;
 }
 
-.nav-tabs__item {
-  flex-shrink: 0;
+.tab-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 10px 16px;
-  border-radius: 12px;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
   color: var(--vt-c-text-dark-2);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
 }
 
-.nav-tabs__item--active {
+.tab-btn--active {
   background: var(--accent-primary);
-  border-color: var(--accent-primary);
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 60, 4, 0.2);
 }
 
-.content {
-  min-height: 400px;
+.tab-btn:not(.tab-btn--active):hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-heading);
+}
+
+.fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px var(--accent-glow);
+  z-index: 30;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 28px rgba(91, 94, 244, 0.5);
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: 32px;
+    right: 40px;
+  }
 }
 </style>

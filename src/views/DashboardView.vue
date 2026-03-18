@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import KpiCard from '@/components/ui/KpiCard.vue'
 import SparklineChart from '@/components/charts/SparklineChart.vue'
 import SessionCard from '@/components/ui/SessionCard.vue'
@@ -27,8 +26,7 @@ const daysUntilCompetition = computed(() => {
 </script>
 
 <template>
-  <AppLayout>
-    <div class="dashboard">
+  <div class="dashboard">
       <!-- Header -->
       <div class="dashboard__header">
         <div class="dashboard__greeting">
@@ -130,14 +128,14 @@ const daysUntilCompetition = computed(() => {
           />
         </div>
       </section>
-    </div>
-  </AppLayout>
+  </div>
 </template>
 
 <style scoped>
 .dashboard {
   padding: 24px 16px;
-  max-width: 900px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -149,7 +147,21 @@ const daysUntilCompetition = computed(() => {
   .dashboard {
     padding: 32px 40px;
     padding-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 
+      "header header"
+      "motivation motivation"
+      "summary history"
+      "recent history";
+    gap: 32px;
   }
+  
+  .dashboard__header { grid-area: header; }
+  .motivation-card { grid-area: motivation; } /* Assuming standard class */
+  .dashboard__section:nth-of-type(1) { grid-area: summary; }
+  .dashboard__section:nth-of-type(2) { grid-area: history; }
+  .dashboard__section:nth-of-type(3) { grid-area: recent; }
 }
 
 .dashboard__header {

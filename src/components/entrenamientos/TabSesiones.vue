@@ -86,7 +86,7 @@ function handleSaveSensations(sensations: TrainingSensations) {
           v-for="session in sortedSessions"
           :key="session.id"
           :session="session"
-          @click:sensations="selectedSession = session"
+          @click:sensations="(s) => selectedSession = s"
         />
       </div>
     </div>

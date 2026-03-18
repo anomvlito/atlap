@@ -1,32 +1,39 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import BottomNav from '@/components/layout/BottomNav.vue'
+import { useAuth } from '@clerk/vue'
+import AppLayout from './components/layout/AppLayout.vue'
+import AuthView from './views/AuthView.vue'
+
+const { isSignedIn, isLoaded } = useAuth()
 </script>
 
 <template>
-  <div class="app-container">
-    <main class="main-content">
-      <RouterView v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </RouterView>
-    </main>
-    <BottomNav />
+  <div class="app-root">
+    <!-- Mientras Clerk carga la sesión -->
+    <div v-if="!isLoaded" class="app-loading">
+      <span class="app-loading__logo">ATLAP</span>
+    </div>
+
+    <template v-else>
+      <!-- Usuario autenticado: app completa con layout -->
+      <AppLayout v-if="isSignedIn">
+        <RouterView v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </RouterView>
+      </AppLayout>
+
+      <!-- Sin sesión: pantalla de login -->
+      <AuthView v-else />
+    </template>
   </div>
 </template>
 
 <style>
-.app-container {
+.app-root {
   min-height: 100vh;
   background-color: var(--vt-c-black);
-  color: var(--vt-c-text-dark-1);
-}
-
-.main-content {
-  padding: 20px 20px 100px 20px;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 /* Transitions */
@@ -45,18 +52,46 @@ import BottomNav from '@/components/layout/BottomNav.vue'
   transform: translateY(-10px);
 }
 
-/* Scrollbar styling */
+/* Loading screen */
+.app-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vt-c-black);
+}
+
+.app-loading__logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  opacity: 0.6;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* Global scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--vt-c-black);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--glass-border);
   border-radius: 10px;
+  border: 2px solid var(--vt-c-black);
 }
 
 ::-webkit-scrollbar-thumb:hover {
