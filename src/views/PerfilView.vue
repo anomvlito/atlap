@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import MedalCounter from '@/components/ui/MedalCounter.vue'
 import { useAthleteStore } from '@/stores/athlete'
+import { getDisciplineConfig } from '@/types/discipline'
 
 const store = useAthleteStore()
 
@@ -20,7 +21,11 @@ const prsByDiscipline = computed(() => {
   for (const disc of store.athlete.disciplines) {
     const discMarks = store.marks.filter((m) => m.discipline === disc)
     if (discMarks.length === 0) continue
-    const best = discMarks.reduce((b, m) => (m.resultSeconds < b.resultSeconds ? m : b))
+    const config = getDisciplineConfig(disc)
+    const betterIs = config?.betterIs ?? 'lower'
+    const best = discMarks.reduce((b, m) =>
+      betterIs === 'lower' ? (m.resultValue < b.resultValue ? m : b) : (m.resultValue > b.resultValue ? m : b)
+    )
     result[disc] = { result: best.result, date: best.date }
   }
   return result

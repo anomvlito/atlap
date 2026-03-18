@@ -3,8 +3,11 @@ import { RouterView } from 'vue-router'
 import { useAuth } from '@clerk/vue'
 import AppLayout from './components/layout/AppLayout.vue'
 import AuthView from './views/AuthView.vue'
+import OnboardingView from './views/OnboardingView.vue'
+import { useCurrentUser } from './composables/useCurrentUser'
 
 const { isSignedIn, isLoaded } = useAuth()
+const { isChecking, isOnboarded, refreshUser } = useCurrentUser()
 </script>
 
 <template>
@@ -15,14 +18,24 @@ const { isSignedIn, isLoaded } = useAuth()
     </div>
 
     <template v-else>
-      <!-- Usuario autenticado: app completa con layout -->
-      <AppLayout v-if="isSignedIn">
-        <RouterView v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </RouterView>
-      </AppLayout>
+      <template v-if="isSignedIn">
+        <!-- Verificando perfil en DB -->
+        <div v-if="isChecking" class="app-loading">
+          <span class="app-loading__logo">ATLAP</span>
+        </div>
+
+        <!-- Onboarding: primera vez -->
+        <OnboardingView v-else-if="!isOnboarded" @complete="refreshUser" />
+
+        <!-- App completa con layout -->
+        <AppLayout v-else>
+          <RouterView v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </RouterView>
+        </AppLayout>
+      </template>
 
       <!-- Sin sesión: pantalla de login -->
       <AuthView v-else />
@@ -33,7 +46,7 @@ const { isSignedIn, isLoaded } = useAuth()
 <style>
 .app-root {
   min-height: 100vh;
-  background-color: var(--vt-c-black);
+  background-color: var(--color-background);
 }
 
 /* Transitions */
@@ -58,14 +71,14 @@ const { isSignedIn, isLoaded } = useAuth()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--vt-c-black);
+  background: var(--color-background);
 }
 
 .app-loading__logo {
   font-family: 'Outfit', sans-serif;
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+  background: linear-gradient(135deg, var(--color-heading) 0%, var(--accent-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -85,16 +98,16 @@ const { isSignedIn, isLoaded } = useAuth()
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--vt-c-black);
+  background: var(--color-background-soft);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--glass-border);
   border-radius: 10px;
-  border: 2px solid var(--vt-c-black);
+  border: 2px solid var(--color-background-soft);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.18);
 }
 </style>

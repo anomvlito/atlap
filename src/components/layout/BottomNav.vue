@@ -38,7 +38,7 @@ const navItems = [
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 10, 0.8);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   border-top: 1px solid var(--glass-border);
   padding: 8px 0 calc(8px + env(safe-area-inset-bottom));

@@ -4,6 +4,7 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 import MarkSensationsForm from '@/components/forms/MarkSensationsForm.vue'
 import { useAthleteStore } from '@/stores/athlete'
 import type { Mark, MarkSensations } from '@/data/mock'
+import { formatResult } from '@/types/discipline'
 
 const athleteStore = useAthleteStore()
 const selectedMark = ref<Mark | null>(null)
@@ -48,7 +49,7 @@ function handleSaveSensations(sensations: MarkSensations) {
               @click="openMarkDetails(mark)"
             >
               <div class="mark-card__main">
-                <span class="value">{{ mark.result }}</span>
+                <span class="value">{{ formatResult(mark.resultValue, mark.resultUnit) }}</span>
                 <span class="date">{{ mark.date }}</span>
               </div>
               

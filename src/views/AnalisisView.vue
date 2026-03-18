@@ -24,8 +24,8 @@ const marksByYear = computed(() => {
     .filter((m) => m.discipline === '400m')
     .forEach((m) => {
       const year = m.date.slice(0, 4)
-      if (!byYear[year] || m.resultSeconds < byYear[year]) {
-        byYear[year] = m.resultSeconds
+      if (!byYear[year] || m.resultValue < byYear[year]) {
+        byYear[year] = m.resultValue
       }
     })
   return byYear
@@ -50,13 +50,13 @@ const barOptions = {
   maintainAspectRatio: false,
   scales: {
     x: {
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: { color: '#94a3b8' },
+      grid: { color: 'rgba(0,0,0,0.07)' },
+      ticks: { color: '#6b7280' },
     },
     y: {
       reverse: true,
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: { color: '#94a3b8', callback: (val: number | string) => `${val}s` },
+      grid: { color: 'rgba(0,0,0,0.07)' },
+      ticks: { color: '#6b7280', callback: (val: number | string) => `${val}s` },
       min: 46,
       max: 51,
     },
@@ -65,7 +65,7 @@ const barOptions = {
     legend: { display: false },
     tooltip: {
       backgroundColor: 'rgba(10,10,10,0.95)',
-      borderColor: 'rgba(255,255,255,0.1)',
+      borderColor: 'rgba(0,0,0,0.12)',
       borderWidth: 1,
       titleColor: '#f8fafc',
       bodyColor: '#94a3b8',
@@ -97,11 +97,11 @@ const doughnutOptions = {
   cutout: '65%',
   plugins: {
     legend: {
-      labels: { color: '#94a3b8', font: { size: 12 } },
+      labels: { color: '#6b7280', font: { size: 12 } },
     },
     tooltip: {
       backgroundColor: 'rgba(10,10,10,0.95)',
-      borderColor: 'rgba(255,255,255,0.1)',
+      borderColor: 'rgba(0,0,0,0.12)',
       borderWidth: 1,
       titleColor: '#f8fafc',
       bodyColor: '#94a3b8',
@@ -116,8 +116,8 @@ const trend = computed(() => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   if (marks400.length < 2) return { direction: 'neutral', delta: '—' }
-  const latest = marks400[0]!.resultSeconds
-  const prev = marks400[Math.min(3, marks400.length - 1)]!.resultSeconds
+  const latest = marks400[0]!.resultValue
+  const prev = marks400[Math.min(3, marks400.length - 1)]!.resultValue
   const delta = prev - latest
   return {
     direction: delta > 0 ? 'improving' : delta < 0 ? 'declining' : 'neutral',

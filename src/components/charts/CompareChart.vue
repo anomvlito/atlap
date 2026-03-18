@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js'
 import type { Mark, Rival } from '@/data/mock'
+import { getDisciplineConfig, formatResult } from '@/types/discipline'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -41,14 +42,14 @@ const chartData = computed(() => {
 
   const myData = allDates.map((date) => {
     const found = myFiltered.find((m) => m.date === date)
-    return found ? found.resultSeconds : null
+    return found ? found.resultValue : null
   })
 
   const rivalDatasets = props.rivals.map((rival, i) => {
     const rivalMarks = rival.marks.filter((m) => m.discipline === props.discipline)
     const data = allDates.map((date) => {
       const found = rivalMarks.find((m) => m.date === date)
-      return found ? found.resultSeconds : null
+      return found ? found.resultValue : null
     })
     return {
       label: rival.name,
@@ -80,37 +81,42 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: { color: '#94a3b8', font: { size: 11 } },
-    },
-    y: {
-      reverse: true,
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: {
-        color: '#94a3b8',
-        font: { size: 11 },
-        callback: (val: number | string) => `${val}s`,
+const chartOptions = computed(() => {
+  const config = getDisciplineConfig(props.discipline)
+  const unit = config?.resultUnit ?? 'seconds'
+  const reverse = (config?.betterIs ?? 'lower') === 'lower'
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: { color: 'rgba(0,0,0,0.07)' },
+        ticks: { color: '#6b7280', font: { size: 11 } },
+      },
+      y: {
+        reverse,
+        grid: { color: 'rgba(0,0,0,0.07)' },
+        ticks: {
+          color: '#6b7280',
+          font: { size: 11 },
+          callback: (val: number | string) => formatResult(Number(val), unit),
+        },
       },
     },
-  },
-  plugins: {
-    legend: {
-      labels: { color: '#94a3b8', font: { size: 12 } },
+    plugins: {
+      legend: {
+        labels: { color: '#6b7280', font: { size: 12 } },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(10,10,10,0.95)',
+        borderColor: 'rgba(0,0,0,0.12)',
+        borderWidth: 1,
+        titleColor: '#f8fafc',
+        bodyColor: '#94a3b8',
+      },
     },
-    tooltip: {
-      backgroundColor: 'rgba(10,10,10,0.95)',
-      borderColor: 'rgba(255,255,255,0.1)',
-      borderWidth: 1,
-      titleColor: '#f8fafc',
-      bodyColor: '#94a3b8',
-    },
-  },
-}
+  }
+})
 </script>
 
 <template>

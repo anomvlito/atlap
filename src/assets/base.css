@@ -1,71 +1,55 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@500;700;800;900&display=swap');
 
-/* premium color palette inspired by modern high-end dashboards */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  /* Palette base */
+  --vt-c-white:      #ffffff;
+  --vt-c-white-soft: #f8f9fb;
+  --vt-c-white-mute: #f1f3f7;
 
-  --vt-c-black: #050505;
+  --vt-c-black:      #050505;
   --vt-c-black-soft: #0a0a0a;
   --vt-c-black-mute: #111111;
 
-  --accent-primary: #5b5ef4;
+  /* Brand accent */
+  --accent-primary:   #5b5ef4;
   --accent-secondary: #a855f7;
-  --accent-glow: rgba(91, 94, 244, 0.25);
+  --accent-glow:      rgba(91, 94, 244, 0.15);
 
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+  /* Light-mode glass / card system */
+  --glass-bg:          rgba(0, 0, 0, 0.03);
+  --glass-border:      rgba(0, 0, 0, 0.09);
+  --card-shadow:       0 1px 8px rgba(0, 0, 0, 0.07), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12), 0 8px 32px rgba(0, 0, 0, 0.08);
 
   --font-weight-display: 800;
 
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  /* Semantic status colors */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger:  #dc2626;
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(255, 255, 255, 0.1);
-  --vt-c-divider-dark-2: rgba(255, 255, 255, 0.05);
+  /* Dividers */
+  --vt-c-divider-light-1: rgba(0, 0, 0, 0.12);
+  --vt-c-divider-light-2: rgba(0, 0, 0, 0.06);
 
-  --vt-c-text-light-1: #2c3e50;
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: #f8fafc;
-  --vt-c-text-dark-2: #94a3b8;
-}
+  /* Semantic color variables — light theme by default */
+  --color-background:      #ffffff;
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
 
-/* semantic color variables */
-:root {
-  --color-background: var(--vt-c-black);
-  --color-background-soft: var(--vt-c-black-soft);
-  --color-background-mute: var(--vt-c-black-mute);
+  --color-border:          var(--vt-c-divider-light-2);
+  --color-border-hover:    var(--vt-c-divider-light-1);
 
-  --color-border: var(--vt-c-divider-dark-2);
-  --color-border-hover: var(--vt-c-divider-dark-1);
+  --color-heading:         #111827;
+  --color-text:            #374151;
+  --color-text-muted:      #6b7280;
 
-  --color-heading: var(--vt-c-text-dark-1);
-  --color-text: var(--vt-c-text-dark-2);
+  /* Aliases para componentes que usan variables dark-named */
+  --vt-c-text-dark-1: #111827;
+  --vt-c-text-dark-2: #6b7280;
 
   --section-gap: 160px;
 }
-
-/* forcing dark theme by default for premium feel */
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-background: var(--vt-c-white);
-    --color-background-soft: var(--vt-c-white-soft);
-    --color-background-mute: var(--vt-c-white-mute);
-
-    --color-border: var(--vt-c-divider-light-2);
-    --color-border-hover: var(--vt-c-divider-light-1);
-
-    --color-heading: var(--vt-c-text-light-1);
-    --color-text: var(--vt-c-text-light-2);
-  }
-}
-
 
 *,
 *::before,
@@ -79,13 +63,9 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
+  transition: color 0.3s, background-color 0.3s;
   line-height: 1.6;
-  font-family:
-    'Inter',
-    sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -94,6 +74,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Outfit', sans-serif;
+  color: var(--color-heading);
 }
 
 /* Card hover utility */
@@ -103,5 +84,5 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-hover:hover {
   box-shadow: var(--card-shadow-hover);
-  border-color: var(--vt-c-divider-dark-1);
+  border-color: var(--vt-c-divider-light-1);
 }

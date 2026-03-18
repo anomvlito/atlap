@@ -119,7 +119,7 @@ function handleSave() {
 .modal {
   width: 100%;
   max-width: 500px;
-  background: var(--vt-c-black-mute);
+  background: var(--color-background-soft);
   border-top: 1px solid var(--glass-border);
   border-radius: 20px 20px 0 0;
   display: flex;

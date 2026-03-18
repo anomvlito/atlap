@@ -57,7 +57,7 @@ const navItems = [
 .sidebar {
   width: 260px;
   height: 100vh;
-  background: var(--vt-c-black-soft);
+  background: var(--color-background);
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
@@ -82,7 +82,7 @@ const navItems = [
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--color-heading);
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 
@@ -114,7 +114,7 @@ const navItems = [
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--color-heading);
 }
 
@@ -180,7 +180,7 @@ const navItems = [
 }
 
 .settings-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--color-heading);
 }
 </style>

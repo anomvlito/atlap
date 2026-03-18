@@ -23,7 +23,7 @@ const isDesktop = useMediaQuery('(min-width: 1024px)')
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--vt-c-black);
+  background-color: var(--color-background);
 }
 
 .sidebar-wrapper {

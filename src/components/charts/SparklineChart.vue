@@ -26,7 +26,7 @@ const chartData = computed(() => {
     labels: recent.map(() => ''),
     datasets: [
       {
-        data: recent.map((m) => m.resultSeconds),
+        data: recent.map((m) => m.resultValue),
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99, 102, 241, 0.15)',
         pointRadius: 0,
