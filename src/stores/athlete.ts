@@ -15,7 +15,6 @@ import {
   mockHabits,
   mockThrows,
   lucasNerviThrows,
-  type Mark,
   type TrainingSession,
   type TrainingSensations,
   type MarkSensations,

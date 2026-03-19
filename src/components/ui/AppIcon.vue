@@ -15,7 +15,7 @@ const props = defineProps<{
   strokeWidth?: number
 }>()
 
-const registry: Record<string, any> = {
+const registry: Record<string, object> = {
   Activity, Trophy, Award, Zap, Dumbbell, Settings, TrendingUp, TrendingDown, Minus,
   Calendar, Clock, Flame, ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
   Plus, BookOpen, Users, User, BarChart2, BarChart, Heart, Wind, Target, Check, Star,

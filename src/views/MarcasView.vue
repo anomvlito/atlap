@@ -4,7 +4,8 @@ import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, PointElement, LineElement,
-  Tooltip, Filler
+  Tooltip, Filler,
+  type TooltipItem
 } from 'chart.js'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useAthleteStore } from '@/stores/athlete'
@@ -118,8 +119,8 @@ const chartOptions = computed(() => ({
       bodyColor: '#6b7280',
       padding: 12,
       callbacks: {
-        title: (items: any[]) => sorted.value[items[0].dataIndex]?.competition ?? '',
-        label: (item: any) => {
+        title: (items: TooltipItem<'line'>[]) => sorted.value[items[0]?.dataIndex ?? 0]?.competition ?? '',
+        label: (item: TooltipItem<'line'>) => {
           const t = sorted.value[item.dataIndex]!
           const lines = [` ${item.raw} m — ${t.location}`]
           if (t.place !== undefined) lines.push(` Posición: ${t.place}°`)
@@ -134,7 +135,7 @@ const chartOptions = computed(() => ({
       grid: { color: 'rgba(0,0,0,0.05)' }
     },
     y: {
-      ticks: { callback: (v: any) => `${v} m`, font: { size: 11 }, color: '#9ca3af' },
+      ticks: { callback: (v: number | string) => `${v} m`, font: { size: 11 }, color: '#9ca3af' },
       grid: { color: 'rgba(0,0,0,0.05)' }
     }
   }

@@ -2,7 +2,7 @@
 import AppIcon from './AppIcon.vue'
 import type { TrainingSession } from '@/data/mock'
 
-const props = defineProps<{
+defineProps<{
   session: TrainingSession
 }>()
 

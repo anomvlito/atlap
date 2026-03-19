@@ -4,7 +4,8 @@ import { Bar, Doughnut } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, BarElement, ArcElement,
-  Tooltip, Legend
+  Tooltip, Legend,
+  type TooltipItem
 } from 'chart.js'
 import { useAthleteStore } from '@/stores/athlete'
 import AppIcon from '@/components/ui/AppIcon.vue'
@@ -12,11 +13,6 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 
 const store = useAthleteStore()
-
-// ─── Datos base ───────────────────────────────────────────────
-const sorted = computed(() =>
-  [...store.throws].sort((a, b) => a.date.localeCompare(b.date))
-)
 
 // ─── Tendencia ────────────────────────────────────────────────
 const trend = computed(() => {
@@ -74,7 +70,7 @@ const barOptions = {
       borderWidth: 1,
       titleColor: '#111827',
       bodyColor: '#6b7280',
-      callbacks: { label: (item: any) => ` ${item.raw} m` }
+      callbacks: { label: (item: TooltipItem<'bar'>) => ` ${item.raw} m` }
     }
   },
   scales: {
@@ -82,7 +78,7 @@ const barOptions = {
     y: {
       min: 53, max: 66,
       grid: { color: 'rgba(0,0,0,0.05)' },
-      ticks: { color: '#9ca3af', callback: (v: any) => `${v} m` }
+      ticks: { color: '#9ca3af', callback: (v: number | string) => `${v} m` }
     }
   }
 }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AppIcon from '@/components/ui/AppIcon.vue'
 
-const showForm = false // placeholder
 </script>
 
 <template>
