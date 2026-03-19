@@ -1,174 +1,88 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import TrainingForm from '@/components/forms/TrainingForm.vue'
-import TabSesiones from '@/components/entrenamientos/TabSesiones.vue'
-import TabHorario from '@/components/entrenamientos/TabHorario.vue'
-import TabEjercicios from '@/components/entrenamientos/TabEjercicios.vue'
-import TabHabitos from '@/components/entrenamientos/TabHabitos.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 
-type TabKey = 'sesiones' | 'horario' | 'ejercicios' | 'habitos'
-
-const activeTab = ref<TabKey>('sesiones')
-const showForm = ref(false)
-
-const tabs: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'sesiones', label: 'Sesiones', icon: 'Activity' },
-  { key: 'horario', label: 'Horario', icon: 'Calendar' },
-  { key: 'ejercicios', label: 'Ejercicios', icon: 'Dumbbell' },
-  { key: 'habitos', label: 'Hábitos', icon: 'RefreshCw' },
-]
+const showForm = false // placeholder
 </script>
 
 <template>
-  <div class="entrenamientos">
-      <div class="entrenamientos__header">
+  <div class="entrenos">
+    <div class="entrenos__header">
+      <div>
         <h1 class="page-title">Entrenamientos</h1>
-        <p class="page-subtitle">Registro y seguimiento de tu preparación</p>
+        <p class="page-subtitle">Registro de tus sesiones</p>
       </div>
+    </div>
 
-      <!-- Tab bar -->
-      <div class="tab-bar">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          class="tab-btn"
-          :class="{ 'tab-btn--active': activeTab === tab.key }"
-          @click="activeTab = tab.key"
-        >
-          <AppIcon :name="tab.icon" :size="15" />
-          <span>{{ tab.label }}</span>
-        </button>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <AppIcon name="Activity" :size="36" />
       </div>
-
-      <!-- v-show preserva el estado de los filtros entre tabs -->
-      <div v-show="activeTab === 'sesiones'">
-        <TabSesiones />
-      </div>
-      <div v-show="activeTab === 'horario'">
-        <TabHorario />
-      </div>
-      <div v-show="activeTab === 'ejercicios'">
-        <TabEjercicios />
-      </div>
-      <div v-show="activeTab === 'habitos'">
-        <TabHabitos />
-      </div>
-
-      <!-- FAB solo en sesiones -->
-      <button
-        v-if="activeTab === 'sesiones'"
-        class="fab"
-        @click="showForm = true"
-        aria-label="Nueva sesión"
-      >
-        <AppIcon name="Plus" :size="26" />
+      <p class="empty-title">Sin sesiones registradas</p>
+      <p class="empty-sub">Aquí podrás registrar tus entrenamientos, ejercicios y hábitos.</p>
+      <button class="btn-add" disabled>
+        <AppIcon name="Plus" :size="16" />
+        Nueva sesión (próximamente)
       </button>
-
-      <TrainingForm v-if="showForm" @close="showForm = false" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.entrenamientos {
-  padding: 24px 16px;
+.entrenos {
+  padding: 24px 16px 100px;
   max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-bottom: 100px;
+  gap: 32px;
 }
-
-@media (min-width: 768px) {
-  .entrenamientos {
-    padding: 32px 40px;
-    padding-bottom: 40px;
-  }
+@media (min-width: 1024px) {
+  .entrenos { padding: 32px 40px 60px; }
 }
+.page-title { font-size: 24px; font-weight: 800; color: var(--color-heading); }
+.page-subtitle { font-size: 14px; color: var(--color-text-muted); margin-top: 2px; }
 
-.page-title {
-  font-size: 24px;
-  font-weight: var(--font-weight-display);
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 64px 24px;
+  background: var(--glass-bg);
+  border: 1px dashed var(--glass-border);
+  border-radius: 20px;
+}
+.empty-icon {
+  color: var(--accent-primary);
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+.empty-title {
+  font-size: 18px;
+  font-weight: 700;
   color: var(--color-heading);
 }
-
-.page-subtitle {
+.empty-sub {
   font-size: 14px;
-  color: var(--vt-c-text-dark-2);
-  margin-top: 4px;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  line-height: 1.6;
 }
-
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 5px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.tab-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.tab-btn {
+.btn-add {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 14px;
-  border-radius: 10px;
+  background: var(--accent-primary);
+  color: #fff;
   border: none;
-  background: transparent;
-  color: var(--vt-c-text-dark-2);
-  font-size: 13px;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-
-.tab-btn--active {
-  background: var(--accent-primary);
-  color: white;
-}
-
-.tab-btn:not(.tab-btn--active):hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-heading);
-}
-
-.fab {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--accent-primary);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px var(--accent-glow);
-  z-index: 30;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.fab:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 28px rgba(91, 94, 244, 0.5);
-}
-
-@media (min-width: 768px) {
-  .fab {
-    bottom: 32px;
-    right: 40px;
-  }
+  cursor: not-allowed;
+  font-family: inherit;
+  opacity: 0.5;
+  margin-top: 8px;
 }
 </style>

@@ -13,13 +13,15 @@ import {
   mockSchedule,
   mockExercises,
   mockHabits,
+  mockThrows,
   type Mark,
   type TrainingSession,
   type TrainingSensations,
   type MarkSensations,
   type Habit,
   type ExerciseEntry,
-  type ScheduledSession
+  type ScheduledSession,
+  type Throw
 } from '@/data/mock';
 
 export const useAthleteStore = defineStore('athlete', () => {
@@ -35,6 +37,7 @@ export const useAthleteStore = defineStore('athlete', () => {
   const exercises = ref(mockExercises);
   const habits = ref(mockHabits);
   const quotes = ref(mockQuotes);
+  const throws = ref<Throw[]>(mockThrows);
 
   // ─── COMPUTEDS ───────────────────────────────────────────────
 
@@ -137,6 +140,10 @@ export const useAthleteStore = defineStore('athlete', () => {
     marks.value = marks.value.map(m => (m.id === id ? { ...m, sensations } : m));
   }
 
+  function addThrow(t: Omit<Throw, 'id'>) {
+    throws.value = [...throws.value, { ...t, id: `t${Date.now()}` }];
+  }
+
   function addHabit(habit: Omit<Habit, 'id'>) {
     habits.value = [{ ...habit, id: `h${Date.now()}` }, ...habits.value];
   }
@@ -169,6 +176,8 @@ export const useAthleteStore = defineStore('athlete', () => {
     medalsByYear,
     exercisesByName,
     habitsByType,
+    throws,
+    addThrow,
     setDiscipline,
     addSession,
     updateSessionSensations,
