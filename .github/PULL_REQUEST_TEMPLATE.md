@@ -1,17 +1,15 @@
-## Description
-<!-- Brief description of changes -->
+## Descripción
+<!-- Descripción breve de los cambios -->
 
-## Type of Change
-- [ ] `fix:` Bug fix
-- [ ] `feat:` New feature
-- [ ] `refactor:` Code refactoring
-- [ ] `docs:` Documentation
-- [ ] `test:` Tests
-- [ ] `chore:` Maintenance/tooling
-- [ ] `ci:` CI/CD changes
+## Tipo de cambio
+- [ ] `fix:` Corrección de bug
+- [ ] `feat:` Nueva funcionalidad
+- [ ] `refactor:` Refactorización
+- [ ] `docs:` Documentación
+- [ ] `chore:` Mantenimiento
+- [ ] `ci:` CI/CD
 
 ## Checklist
-- [ ] Tests pass locally (`node tests/run-all.js`)
-- [ ] Validation scripts pass
-- [ ] Follows conventional commits format
-- [ ] Updated relevant documentation
+- [ ] `npm run build` pasa sin errores
+- [ ] Probado en el navegador (dev o preview de Vercel)
+- [ ] Sigue el formato de commits convencional
