@@ -14,6 +14,7 @@ import {
   mockExercises,
   mockHabits,
   mockThrows,
+  lucasNerviThrows,
   type Mark,
   type TrainingSession,
   type TrainingSensations,
@@ -144,6 +145,12 @@ export const useAthleteStore = defineStore('athlete', () => {
     throws.value = [...throws.value, { ...t, id: `t${Date.now()}` }];
   }
 
+  function importLucasNervi() {
+    const existingIds = new Set(throws.value.map(t => t.id));
+    const toAdd = lucasNerviThrows.filter(t => !existingIds.has(t.id));
+    throws.value = [...throws.value, ...toAdd];
+  }
+
   function addHabit(habit: Omit<Habit, 'id'>) {
     habits.value = [{ ...habit, id: `h${Date.now()}` }, ...habits.value];
   }
@@ -178,6 +185,7 @@ export const useAthleteStore = defineStore('athlete', () => {
     habitsByType,
     throws,
     addThrow,
+    importLucasNervi,
     setDiscipline,
     addSession,
     updateSessionSensations,
