@@ -3,10 +3,10 @@
  * POST /api/cycles  → crear ciclo (atleta o coach)
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody } from '../_lib/auth'
-import { UserRepository } from '../_lib/repositories/UserRepository'
-import { CycleRepository } from '../_lib/repositories/CycleRepository'
-import type { CyclePhase } from '../_lib/db'
+import { requireAuth, sendJson, readBody } from '../_lib/auth.js'
+import { UserRepository } from '../_lib/repositories/UserRepository.js'
+import { CycleRepository } from '../_lib/repositories/CycleRepository.js'
+import type { CyclePhase } from '../_lib/db.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

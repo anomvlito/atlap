@@ -4,8 +4,8 @@
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { eq } from 'drizzle-orm'
-import { db, users } from '../_lib/db'
-import { requireAuth, sendJson } from '../_lib/auth'
+import { db, users } from '../_lib/db.js'
+import { requireAuth, sendJson } from '../_lib/auth.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

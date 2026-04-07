@@ -3,9 +3,9 @@
  * POST /api/habits  → registrar hábito
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody } from '../_lib/auth'
-import { UserRepository } from '../_lib/repositories/UserRepository'
-import { HabitRepository } from '../_lib/repositories/HabitRepository'
+import { requireAuth, sendJson, readBody } from '../_lib/auth.js'
+import { UserRepository } from '../_lib/repositories/UserRepository.js'
+import { HabitRepository } from '../_lib/repositories/HabitRepository.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

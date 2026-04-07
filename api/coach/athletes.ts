@@ -4,10 +4,10 @@
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { eq } from 'drizzle-orm'
-import { requireAuth, sendJson, readBody } from '../_lib/auth'
-import { UserRepository } from '../_lib/repositories/UserRepository'
-import { CoachRepository } from '../_lib/repositories/CoachRepository'
-import { db, users } from '../_lib/db'
+import { requireAuth, sendJson, readBody } from '../_lib/auth.js'
+import { UserRepository } from '../_lib/repositories/UserRepository.js'
+import { CoachRepository } from '../_lib/repositories/CoachRepository.js'
+import { db, users } from '../_lib/db.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

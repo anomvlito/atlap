@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { db, users, type User, type NewUser } from '../db'
+import { db, users, type User, type NewUser } from '../db.js'
 
 export const UserRepository = {
   async findByClerkId(clerkId: string): Promise<User | null> {

@@ -3,9 +3,9 @@
  * POST  /api/sessions/:id/sensations  → crear o actualizar (upsert)
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth'
-import { UserRepository } from '../../_lib/repositories/UserRepository'
-import { SessionRepository } from '../../_lib/repositories/SessionRepository'
+import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth.js'
+import { UserRepository } from '../../_lib/repositories/UserRepository.js'
+import { SessionRepository } from '../../_lib/repositories/SessionRepository.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

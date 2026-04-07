@@ -4,8 +4,8 @@
  * También puede llamarse manualmente desde el frontend al primer login.
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody } from '../_lib/auth'
-import { UserRepository } from '../_lib/repositories/UserRepository'
+import { requireAuth, sendJson, readBody } from '../_lib/auth.js'
+import { UserRepository } from '../_lib/repositories/UserRepository.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   if (req.method !== 'POST') return sendJson(res, 405, { success: false, error: 'Método no permitido' })

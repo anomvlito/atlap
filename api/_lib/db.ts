@@ -7,7 +7,7 @@
  */
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
-import * as schema from '../../src/db/schema'
+import * as schema from '../../src/db/schema.js'
 
 const url = process.env.DATABASE_URL
 if (!url) throw new Error('DATABASE_URL no está configurada')
@@ -15,4 +15,4 @@ if (!url) throw new Error('DATABASE_URL no está configurada')
 const sql = neon(url)
 export const db = drizzle(sql, { schema })
 
-export * from '../../src/db/schema'
+export * from '../../src/db/schema.js'

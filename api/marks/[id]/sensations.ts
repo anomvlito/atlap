@@ -3,9 +3,9 @@
  * POST /api/marks/:id/sensations → upsert
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth'
-import { UserRepository } from '../../_lib/repositories/UserRepository'
-import { MarkRepository } from '../../_lib/repositories/MarkRepository'
+import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth.js'
+import { UserRepository } from '../../_lib/repositories/UserRepository.js'
+import { MarkRepository } from '../../_lib/repositories/MarkRepository.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

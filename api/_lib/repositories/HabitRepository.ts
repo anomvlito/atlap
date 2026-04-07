@@ -1,7 +1,7 @@
 import { eq, and, gte, lte, desc } from 'drizzle-orm'
-import { db, habits } from '../db'
-import type { Habit, NewHabit } from '../db'
-import type { Filters } from './base'
+import { db, habits } from '../db.js'
+import type { Habit, NewHabit } from '../db.js'
+import type { Filters } from './base.js'
 
 export const HabitRepository = {
   async findById(id: string): Promise<Habit | null> {

@@ -1,6 +1,6 @@
 import { eq, and, inArray } from 'drizzle-orm';
-import { db, coachRelations, users } from '../db';
-import type { CoachRelation, NewCoachRelation, User } from '../db';
+import { db, coachRelations, users } from '../db.js';
+import type { CoachRelation, NewCoachRelation, User } from '../db.js';
 
 export const CoachRepository = {
   async findRelation(athleteId: string, coachId: string): Promise<CoachRelation | null> {

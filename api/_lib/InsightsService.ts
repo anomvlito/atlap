@@ -8,9 +8,9 @@
  *   - value: dato clave del insight (para destacar)
  *   - icon: nombre del icono Lucide
  */
-import { MarkRepository } from './repositories/MarkRepository'
-import { SessionRepository } from './repositories/SessionRepository'
-import { HabitRepository } from './repositories/HabitRepository'
+import { MarkRepository } from './repositories/MarkRepository.js'
+import { SessionRepository } from './repositories/SessionRepository.js'
+import { HabitRepository } from './repositories/HabitRepository.js'
 
 export type InsightType =
   | 'floor_performance'   // todas las marcas sobre un umbral

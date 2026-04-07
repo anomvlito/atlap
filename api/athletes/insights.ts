@@ -4,9 +4,9 @@
  * También accesible por el coach del atleta.
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson } from '../_lib/auth'
-import { UserRepository } from '../_lib/repositories/UserRepository'
-import { generateInsights } from '../_lib/InsightsService'
+import { requireAuth, sendJson } from '../_lib/auth.js'
+import { UserRepository } from '../_lib/repositories/UserRepository.js'
+import { generateInsights } from '../_lib/InsightsService.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   if (req.method !== 'GET') return sendJson(res, 405, { success: false, error: 'Método no permitido' })

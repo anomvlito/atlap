@@ -1,7 +1,7 @@
 import { eq, and, gte, lte, desc } from 'drizzle-orm'
-import { db, marks, markSensations } from '../db'
-import type { Mark, NewMark, MarkSensations as MarkSensationsRow, NewMarkSensations } from '../db'
-import type { Filters } from './base'
+import { db, marks, markSensations } from '../db.js'
+import type { Mark, NewMark, MarkSensations as MarkSensationsRow, NewMarkSensations } from '../db.js'
+import type { Filters } from './base.js'
 
 export const MarkRepository = {
   async findById(id: string): Promise<Mark | null> {

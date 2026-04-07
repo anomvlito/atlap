@@ -1,6 +1,6 @@
 import { eq, and, desc } from 'drizzle-orm'
-import { db, trainingCycles, scheduledSessions } from '../db'
-import type { TrainingCycle, NewTrainingCycle, ScheduledSession, NewScheduledSession } from '../db'
+import { db, trainingCycles, scheduledSessions } from '../db.js'
+import type { TrainingCycle, NewTrainingCycle, ScheduledSession, NewScheduledSession } from '../db.js'
 
 export const CycleRepository = {
   async findById(id: string): Promise<TrainingCycle | null> {

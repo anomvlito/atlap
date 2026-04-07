@@ -3,9 +3,9 @@
  * POST /api/cycles/:id/schedule  → agregar sesión planificada
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth'
-import { UserRepository } from '../../_lib/repositories/UserRepository'
-import { CycleRepository } from '../../_lib/repositories/CycleRepository'
+import { requireAuth, sendJson, readBody, getParam } from '../../_lib/auth.js'
+import { UserRepository } from '../../_lib/repositories/UserRepository.js'
+import { CycleRepository } from '../../_lib/repositories/CycleRepository.js'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const auth = await requireAuth(req, res)

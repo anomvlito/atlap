@@ -1,7 +1,7 @@
 import { eq, and, gte, lte, desc } from 'drizzle-orm'
-import { db, trainingSessions, sessionSensations } from '../db'
-import type { TrainingSession, NewTrainingSession, SessionSensations, NewSessionSensations } from '../db'
-import type { Filters } from './base'
+import { db, trainingSessions, sessionSensations } from '../db.js'
+import type { TrainingSession, NewTrainingSession, SessionSensations, NewSessionSensations } from '../db.js'
+import type { Filters } from './base.js'
 
 export const SessionRepository = {
   async findById(id: string): Promise<TrainingSession | null> {
