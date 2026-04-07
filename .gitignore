@@ -71,6 +71,9 @@ pip-delete-this-directory.txt
 tasks/
 examples/sessions/*.tmp
 
+# API bundles (generados por scripts/build-api.mjs)
+api/**/*.js
+
 # Build / Temporary
 *.bak
 *.tmp
