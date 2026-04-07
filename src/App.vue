@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useAuth } from '@clerk/vue'
 import AppLayout from './components/layout/AppLayout.vue'
 import AuthView from './views/AuthView.vue'
 import OnboardingView from './views/OnboardingView.vue'
 import { useCurrentUser } from './composables/useCurrentUser'
+import { useAthleteLoader } from './composables/useAthleteLoader'
 
 const { isSignedIn, isLoaded } = useAuth()
 const { isChecking, isOnboarded, refreshUser } = useCurrentUser()
+const { loadData } = useAthleteLoader()
+
+watch(isOnboarded, (v) => { if (v) loadData() }, { immediate: true })
 </script>
 
 <template>

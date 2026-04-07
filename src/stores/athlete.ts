@@ -3,16 +3,11 @@ import { ref, computed } from 'vue';
 import { getDisciplineConfig } from '@/types/discipline';
 import {
   mockAthlete,
-  mockMarks,
-  mockSessions,
   mockTeam,
   mockRivals,
-  mockKpis,
   mockNextCompetition,
   mockSchedule,
   mockExercises,
-  mockHabits,
-  mockTrainingCycles,
   type Mark,
   type TrainingSession,
   type TrainingSensations,
@@ -25,21 +20,38 @@ import {
 
 export const useAthleteStore = defineStore('athlete', () => {
   const athlete = ref(mockAthlete);
-  const marks = ref(mockMarks);
-  const sessions = ref(mockSessions);
+  const marks = ref<Mark[]>([]);
+  const sessions = ref<TrainingSession[]>([]);
   const team = ref(mockTeam);
   const rivals = ref(mockRivals);
-  const kpis = ref(mockKpis);
   const nextCompetition = ref(mockNextCompetition);
   const selectedDiscipline = ref('400m');
   const schedule = ref(mockSchedule);
-  const exercises = ref(mockExercises);
-  const habits = ref(mockHabits);
-  const trainingCycles = ref<TrainingCycle[]>(mockTrainingCycles);
+  const exercises = ref<ExerciseEntry[]>(mockExercises);
+  const habits = ref<Habit[]>([]);
+  const trainingCycles = ref<TrainingCycle[]>([]);
+  const isLoading = ref(false);
 
   // ─── COMPUTEDS ───────────────────────────────────────────────
 
   const disciplines = computed(() => athlete.value.disciplines);
+
+  const streakDays = computed(() => {
+    const sessionDates = new Set(sessions.value.map((s) => s.date));
+    let count = 0;
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    while (true) {
+      const iso = d.toISOString().split('T')[0]!;
+      if (sessionDates.has(iso)) {
+        count++;
+        d.setDate(d.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return count;
+  });
 
   const marksByDiscipline = computed(() =>
     marks.value
@@ -74,9 +86,9 @@ export const useAthleteStore = defineStore('athlete', () => {
   );
 
   const sessionsByType = computed(() => {
-    const counts = { velocidad: 0, fondo: 0, tecnica: 0, fuerza: 0 };
+    const counts = { velocidad: 0, fondo: 0, tecnica: 0, fuerza: 0, mixto: 0 };
     for (const s of sessions.value) {
-      counts[s.type]++;
+      if (s.type in counts) counts[s.type as keyof typeof counts]++;
     }
     return counts;
   });
@@ -126,6 +138,22 @@ export const useAthleteStore = defineStore('athlete', () => {
     selectedDiscipline.value = discipline;
   }
 
+  function setMarks(data: Mark[]) {
+    marks.value = data;
+  }
+
+  function setSessions(data: TrainingSession[]) {
+    sessions.value = data;
+  }
+
+  function setHabits(data: Habit[]) {
+    habits.value = data;
+  }
+
+  function setCycles(data: TrainingCycle[]) {
+    trainingCycles.value = data;
+  }
+
   function addMark(mark: Omit<Mark, 'id' | 'sensations'>) {
     const newMark: Mark = { ...mark, id: `m${Date.now()}` };
     marks.value = [newMark, ...marks.value];
@@ -160,14 +188,15 @@ export const useAthleteStore = defineStore('athlete', () => {
     sessions,
     team,
     rivals,
-    kpis,
     nextCompetition,
     selectedDiscipline,
     schedule,
     exercises,
     habits,
     trainingCycles,
+    isLoading,
     disciplines,
+    streakDays,
     marksByDiscipline,
     personalRecord,
     recentSessions,
@@ -178,6 +207,10 @@ export const useAthleteStore = defineStore('athlete', () => {
     exercisesByName,
     habitsByType,
     setDiscipline,
+    setMarks,
+    setSessions,
+    setHabits,
+    setCycles,
     addMark,
     addSession,
     updateSessionSensations,

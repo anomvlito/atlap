@@ -29,13 +29,14 @@ const today = computed(() =>
 const totalSessions = computed(() => store.sessions.length)
 const totalMarks    = computed(() => store.marks.length)
 const totalWins     = computed(() => store.medals.gold)
-const streak        = computed(() => store.kpis.streak)
+const streak        = computed(() => store.streakDays)
 
 const nextComp = computed(() => store.nextCompetition)
 const daysUntil = computed(() => {
   const diff = new Date(nextComp.value.date).getTime() - Date.now()
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 })
+const hasUpcomingComp = computed(() => daysUntil.value > 0)
 
 const recentMarks    = computed(() => store.recentMarks.slice(0, 4))
 const recentSessions = computed(() => store.recentSessions.slice(0, 3))
@@ -112,7 +113,7 @@ function formatDate(iso: string) {
     </section>
 
     <!-- Próxima competencia -->
-    <section class="next-comp">
+    <section v-if="hasUpcomingComp" class="next-comp">
       <div class="next-comp__left">
         <p class="section-label">Próxima competencia</p>
         <h2 class="next-comp__name">{{ nextComp.name }}</h2>
@@ -130,7 +131,11 @@ function formatDate(iso: string) {
     <!-- Últimas marcas -->
     <section class="list-section">
       <h2 class="section-label">Últimas marcas</h2>
-      <div class="mark-list">
+      <div v-if="recentMarks.length === 0" class="empty-state">
+        <AppIcon name="Target" :size="28" class="empty-state__icon" />
+        <p>Aún no hay marcas registradas</p>
+      </div>
+      <div v-else class="mark-list">
         <div
           v-for="m in recentMarks"
           :key="m.id"
@@ -153,7 +158,11 @@ function formatDate(iso: string) {
     <!-- Últimos entrenamientos -->
     <section class="list-section">
       <h2 class="section-label">Últimos entrenamientos</h2>
-      <div class="session-list">
+      <div v-if="recentSessions.length === 0" class="empty-state">
+        <AppIcon name="Activity" :size="28" class="empty-state__icon" />
+        <p>Aún no hay entrenamientos registrados</p>
+      </div>
+      <div v-else class="session-list">
         <div v-for="s in recentSessions" :key="s.id" class="session-row">
           <div
             class="session-type-dot"
@@ -382,4 +391,20 @@ function formatDate(iso: string) {
   background: var(--glass-border);
 }
 .feeling-dot--on { background: var(--accent-primary); }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+.empty-state__icon { opacity: 0.35; }
 </style>

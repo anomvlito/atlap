@@ -52,7 +52,7 @@ function handleSaveSensations(sensations: TrainingSensations) {
       </div>
       <div class="weekly-divider" />
       <div class="weekly-stat">
-        <p class="weekly-stat__value">{{ store.kpis.streak }}</p>
+        <p class="weekly-stat__value">{{ store.streakDays }}</p>
         <p class="weekly-stat__label">semanas racha</p>
       </div>
     </div>

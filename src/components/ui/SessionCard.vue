@@ -15,6 +15,7 @@ const typeLabels: Record<TrainingSession['type'], string> = {
   fondo: 'Fondo',
   tecnica: 'Técnica',
   fuerza: 'Fuerza',
+  mixto: 'Mixto',
 }
 
 const typeColors: Record<TrainingSession['type'], string> = {
@@ -22,6 +23,7 @@ const typeColors: Record<TrainingSession['type'], string> = {
   fondo: '#10b981',
   tecnica: '#f59e0b',
   fuerza: '#ef4444',
+  mixto: '#8b5cf6',
 }
 
 const typeIcons: Record<TrainingSession['type'], string> = {
@@ -29,6 +31,7 @@ const typeIcons: Record<TrainingSession['type'], string> = {
   fondo: 'Wind',
   tecnica: 'Target',
   fuerza: 'Dumbbell',
+  mixto: 'Layers',
 }
 
 function formatDate(dateStr: string) {

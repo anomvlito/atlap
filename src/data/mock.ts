@@ -30,7 +30,7 @@ export interface ScheduledSession {
   id: string;
   date: string;
   dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-  type: 'velocidad' | 'fondo' | 'tecnica' | 'fuerza';
+  type: 'velocidad' | 'fondo' | 'tecnica' | 'fuerza' | 'mixto';
   plannedDistanceKm: number;
   plannedDurationMin: number;
   notes?: string;
@@ -67,7 +67,6 @@ export interface Habit {
   preCompetition?: boolean;
 }
 
-
 export interface Athlete {
   id: string;
   name: string;
@@ -97,7 +96,7 @@ export interface Mark {
 export interface TrainingSession {
   id: string;
   date: string;
-  type: 'velocidad' | 'fondo' | 'tecnica' | 'fuerza';
+  type: 'velocidad' | 'fondo' | 'tecnica' | 'fuerza' | 'mixto';
   distanceKm: number;
   series?: string;
   feeling: 1 | 2 | 3 | 4 | 5;
@@ -418,7 +417,6 @@ export const mockKpis = {
   nextCompetition: mockNextCompetition,
   streak: 4
 };
-
 
 // ─── HORARIO PLANIFICADO (4 semanas) ─────────────────────────
 export const mockSchedule: ScheduledSession[] = [
@@ -742,7 +740,6 @@ export const mockHabits: Habit[] = [
   { id: 'h-25', date: '2026-03-08', type: 'masaje', durationMin: 45, notes: 'Masaje de mantenimiento quincenal' },
   { id: 'h-26', date: '2026-02-21', type: 'psicologia', durationMin: 60, notes: 'Gestión de expectativas para período de competencias' }
 ];
-
 
 // ─── MOCK COACH ──────────────────────────────────────────────
 export interface Coach {
