@@ -9,19 +9,18 @@ import {
   mockRivals,
   mockKpis,
   mockNextCompetition,
-  mockQuotes,
   mockSchedule,
   mockExercises,
   mockHabits,
-  mockThrows,
-  lucasNerviThrows,
+  mockTrainingCycles,
+  type Mark,
   type TrainingSession,
   type TrainingSensations,
   type MarkSensations,
   type Habit,
   type ExerciseEntry,
   type ScheduledSession,
-  type Throw
+  type TrainingCycle,
 } from '@/data/mock';
 
 export const useAthleteStore = defineStore('athlete', () => {
@@ -36,35 +35,42 @@ export const useAthleteStore = defineStore('athlete', () => {
   const schedule = ref(mockSchedule);
   const exercises = ref(mockExercises);
   const habits = ref(mockHabits);
-  const quotes = ref(mockQuotes);
-  const throws = ref<Throw[]>(mockThrows);
+  const trainingCycles = ref<TrainingCycle[]>(mockTrainingCycles);
 
   // ─── COMPUTEDS ───────────────────────────────────────────────
 
   const disciplines = computed(() => athlete.value.disciplines);
 
-  const marksByDiscipline = computed(() => marks.value.filter(m => m.discipline === selectedDiscipline.value).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+  const marksByDiscipline = computed(() =>
+    marks.value
+      .filter((m) => m.discipline === selectedDiscipline.value)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+  );
 
   const personalRecord = computed(() => {
     const disciplineMarks = marksByDiscipline.value;
     if (disciplineMarks.length === 0) return null;
     const config = getDisciplineConfig(selectedDiscipline.value);
     const betterIs = config?.betterIs ?? 'lower';
-    return disciplineMarks.reduce((best, m) => (betterIs === 'lower' ? (m.resultValue < best.resultValue ? m : best) : m.resultValue > best.resultValue ? m : best));
+    return disciplineMarks.reduce((best, m) =>
+      betterIs === 'lower'
+        ? m.resultValue < best.resultValue ? m : best
+        : m.resultValue > best.resultValue ? m : best,
+    );
   });
 
   const recentSessions = computed(() =>
     sessions.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5)
+      .slice(0, 5),
   );
 
   const recentMarks = computed(() =>
     marks.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5)
+      .slice(0, 5),
   );
 
   const sessionsByType = computed(() => {
@@ -75,17 +81,10 @@ export const useAthleteStore = defineStore('athlete', () => {
     return counts;
   });
 
-  const dailyQuote = computed(() => {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    return quotes.value[dayOfYear % quotes.value.length]!;
-  });
-
   const medals = computed(() => {
-    const gold = marks.value.filter(m => m.ranking === 1).length;
-    const silver = marks.value.filter(m => m.ranking === 2).length;
-    const bronze = marks.value.filter(m => m.ranking === 3).length;
+    const gold = marks.value.filter((m) => m.ranking === 1).length;
+    const silver = marks.value.filter((m) => m.ranking === 2).length;
+    const bronze = marks.value.filter((m) => m.ranking === 3).length;
     return { gold, silver, bronze, total: gold + silver + bronze };
   });
 
@@ -127,27 +126,22 @@ export const useAthleteStore = defineStore('athlete', () => {
     selectedDiscipline.value = discipline;
   }
 
+  function addMark(mark: Omit<Mark, 'id' | 'sensations'>) {
+    const newMark: Mark = { ...mark, id: `m${Date.now()}` };
+    marks.value = [newMark, ...marks.value];
+  }
+
   function addSession(session: Omit<TrainingSession, 'id'>) {
     const newSession: TrainingSession = { ...session, id: `s${Date.now()}` };
     sessions.value = [newSession, ...sessions.value];
   }
 
   function updateSessionSensations(id: string, sensations: TrainingSensations) {
-    sessions.value = sessions.value.map(s => (s.id === id ? { ...s, sensations } : s));
+    sessions.value = sessions.value.map((s) => (s.id === id ? { ...s, sensations } : s));
   }
 
   function updateMarkSensations(id: string, sensations: MarkSensations) {
-    marks.value = marks.value.map(m => (m.id === id ? { ...m, sensations } : m));
-  }
-
-  function addThrow(t: Omit<Throw, 'id'>) {
-    throws.value = [...throws.value, { ...t, id: `t${Date.now()}` }];
-  }
-
-  function importLucasNervi() {
-    const existingIds = new Set(throws.value.map(t => t.id));
-    const toAdd = lucasNerviThrows.filter(t => !existingIds.has(t.id));
-    throws.value = [...throws.value, ...toAdd];
+    marks.value = marks.value.map((m) => (m.id === id ? { ...m, sensations } : m));
   }
 
   function addHabit(habit: Omit<Habit, 'id'>) {
@@ -155,7 +149,9 @@ export const useAthleteStore = defineStore('athlete', () => {
   }
 
   function toggleScheduleCompleted(id: string, sessionId?: string) {
-    schedule.value = schedule.value.map(s => (s.id === id ? { ...s, completed: !s.completed, sessionId: sessionId ?? s.sessionId } : s)) as ScheduledSession[];
+    schedule.value = schedule.value.map((s) =>
+      s.id === id ? { ...s, completed: !s.completed, sessionId: sessionId ?? s.sessionId } : s,
+    ) as ScheduledSession[];
   }
 
   return {
@@ -170,26 +166,23 @@ export const useAthleteStore = defineStore('athlete', () => {
     schedule,
     exercises,
     habits,
-    quotes,
+    trainingCycles,
     disciplines,
     marksByDiscipline,
     personalRecord,
     recentSessions,
     recentMarks,
     sessionsByType,
-    dailyQuote,
     medals,
     medalsByYear,
     exercisesByName,
     habitsByType,
-    throws,
-    addThrow,
-    importLucasNervi,
     setDiscipline,
+    addMark,
     addSession,
     updateSessionSensations,
     updateMarkSensations,
     addHabit,
-    toggleScheduleCompleted
+    toggleScheduleCompleted,
   };
 });

@@ -15,6 +15,7 @@ const filters: { key: Filter; label: string; icon: string }[] = [
   { key: 'crioterapia', label: 'Crioterapia', icon: 'Snowflake' },
   { key: 'psicologia', label: 'Psicología', icon: 'Brain' },
   { key: 'rutina_pre_comp', label: 'Pre-comp', icon: 'Shield' },
+  { key: 'sueño_registro', label: 'Sueño', icon: 'Moon' },
 ]
 
 const habitLabels: Record<HabitType, string> = {
@@ -23,6 +24,7 @@ const habitLabels: Record<HabitType, string> = {
   crioterapia: 'Crioterapia',
   psicologia: 'Psicología',
   rutina_pre_comp: 'Rutina pre-competencia',
+  sueño_registro: 'Registro de sueño',
 }
 
 const habitIcons: Record<HabitType, string> = {
@@ -31,6 +33,7 @@ const habitIcons: Record<HabitType, string> = {
   crioterapia: 'Snowflake',
   psicologia: 'Brain',
   rutina_pre_comp: 'Shield',
+  sueño_registro: 'Moon',
 }
 
 const habitColors: Record<HabitType, string> = {
@@ -39,6 +42,7 @@ const habitColors: Record<HabitType, string> = {
   crioterapia: '#38bdf8',
   psicologia: '#a855f7',
   rutina_pre_comp: '#5b5ef4',
+  sueño_registro: '#6366f1',
 }
 
 const sortedHabits = computed(() => {

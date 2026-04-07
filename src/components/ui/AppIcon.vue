@@ -6,7 +6,8 @@ import {
   Plus, BookOpen, Users, User, BarChart2, BarChart, Heart, Wind, Target, Check, Star,
   Timer, Footprints, Brain, Snowflake, Scissors, NotebookPen, RefreshCw,
   ArrowRight, Shield, AlarmClock, Medal, MessageSquare, CheckCircle, Circle,
-  Home, Sun, Moon, Droplets, Utensils, LogOut
+  Home, Sun, Moon, Droplets, Utensils, LogOut,
+  Sparkles, Flag, MapPin, X
 } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -21,7 +22,8 @@ const registry: Record<string, object> = {
   Plus, BookOpen, Users, User, BarChart2, BarChart, Heart, Wind, Target, Check, Star,
   Timer, Footprints, Brain, Snowflake, Scissors, NotebookPen, RefreshCw,
   ArrowRight, Shield, AlarmClock, Medal, MessageSquare, CheckCircle, Circle,
-  Home, Sun, Moon, Droplets, Utensils, LogOut
+  Home, Sun, Moon, Droplets, Utensils, LogOut,
+  Sparkles, Flag, MapPin, X
 }
 
 const icon = computed(() => registry[props.name])

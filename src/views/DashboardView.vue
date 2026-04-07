@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useAthleteStore } from '@/stores/athlete'
 import { useCurrentUser } from '@/composables/useCurrentUser'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import PositiveInsights from '@/components/ui/PositiveInsights.vue'
 
 const store = useAthleteStore()
 const { dbUser } = useCurrentUser()
@@ -75,12 +76,8 @@ function formatDate(iso: string) {
       </div>
     </section>
 
-    <!-- Quote del día -->
-    <section class="quote-card">
-      <span class="quote-icon">"</span>
-      <p class="quote-text">{{ store.dailyQuote.text }}</p>
-      <p class="quote-author">— {{ store.dailyQuote.author }}</p>
-    </section>
+    <!-- Refuerzo positivo -->
+    <PositiveInsights />
 
     <!-- KPIs -->
     <section class="kpi-grid">
@@ -224,42 +221,6 @@ function formatDate(iso: string) {
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-/* Quote */
-.quote-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 18px;
-  padding: 20px 20px 18px;
-  box-shadow: var(--card-shadow);
-  position: relative;
-  overflow: hidden;
-}
-.quote-icon {
-  position: absolute;
-  top: -4px;
-  left: 14px;
-  font-size: 72px;
-  font-weight: 900;
-  color: var(--accent-primary);
-  opacity: 0.08;
-  line-height: 1;
-  pointer-events: none;
-  font-family: Georgia, serif;
-}
-.quote-text {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-heading);
-  line-height: 1.6;
-  position: relative;
-}
-.quote-author {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-top: 8px;
-  font-style: italic;
 }
 
 /* KPIs */
