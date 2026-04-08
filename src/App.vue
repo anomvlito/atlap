@@ -5,6 +5,7 @@ import { useAuth } from '@clerk/vue'
 import AppLayout from './components/layout/AppLayout.vue'
 import AuthView from './views/AuthView.vue'
 import OnboardingView from './views/OnboardingView.vue'
+import PixelRunner from './components/ui/PixelRunner.vue'
 import { useCurrentUser } from './composables/useCurrentUser'
 import { useAthleteLoader } from './composables/useAthleteLoader'
 
@@ -20,6 +21,7 @@ watch(isOnboarded, (v) => { if (v) loadData() }, { immediate: true })
     <!-- Mientras Clerk carga la sesión -->
     <div v-if="!isLoaded" class="app-loading">
       <span class="app-loading__logo">ATLAP</span>
+      <PixelRunner class="app-loading__runner" />
     </div>
 
     <template v-else>
@@ -27,6 +29,7 @@ watch(isOnboarded, (v) => { if (v) loadData() }, { immediate: true })
         <!-- Verificando perfil en DB -->
         <div v-if="isChecking" class="app-loading">
           <span class="app-loading__logo">ATLAP</span>
+          <PixelRunner class="app-loading__runner" />
         </div>
 
         <!-- Onboarding: primera vez -->
@@ -77,6 +80,10 @@ watch(isOnboarded, (v) => { if (v) loadData() }, { immediate: true })
   align-items: center;
   justify-content: center;
   background: var(--color-background);
+}
+
+.app-loading__runner {
+  margin-top: 2rem;
 }
 
 .app-loading__logo {
