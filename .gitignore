@@ -84,3 +84,7 @@ api/**/*.js
 *.timestamp-*-*.mjs
 *.tsbuildinfo
 .vercel
+
+
+
+reuniones/audio_reus/
