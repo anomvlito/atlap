@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { getDisciplineConfig } from '@/types/discipline';
 import {
   mockAthlete,
-  mockTeam,
   mockRivals,
   mockNextCompetition,
   mockSchedule,
@@ -15,14 +14,13 @@ import {
   type Habit,
   type ExerciseEntry,
   type ScheduledSession,
-  type TrainingCycle,
+  type TrainingCycle
 } from '@/data/mock';
 
 export const useAthleteStore = defineStore('athlete', () => {
   const athlete = ref(mockAthlete);
   const marks = ref<Mark[]>([]);
   const sessions = ref<TrainingSession[]>([]);
-  const team = ref(mockTeam);
   const rivals = ref(mockRivals);
   const nextCompetition = ref(mockNextCompetition);
   const selectedDiscipline = ref('400m');
@@ -37,7 +35,7 @@ export const useAthleteStore = defineStore('athlete', () => {
   const disciplines = computed(() => athlete.value.disciplines);
 
   const streakDays = computed(() => {
-    const sessionDates = new Set(sessions.value.map((s) => s.date));
+    const sessionDates = new Set(sessions.value.map(s => s.date));
     let count = 0;
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -53,36 +51,28 @@ export const useAthleteStore = defineStore('athlete', () => {
     return count;
   });
 
-  const marksByDiscipline = computed(() =>
-    marks.value
-      .filter((m) => m.discipline === selectedDiscipline.value)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-  );
+  const marksByDiscipline = computed(() => marks.value.filter(m => m.discipline === selectedDiscipline.value).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
 
   const personalRecord = computed(() => {
     const disciplineMarks = marksByDiscipline.value;
     if (disciplineMarks.length === 0) return null;
     const config = getDisciplineConfig(selectedDiscipline.value);
     const betterIs = config?.betterIs ?? 'lower';
-    return disciplineMarks.reduce((best, m) =>
-      betterIs === 'lower'
-        ? m.resultValue < best.resultValue ? m : best
-        : m.resultValue > best.resultValue ? m : best,
-    );
+    return disciplineMarks.reduce((best, m) => (betterIs === 'lower' ? (m.resultValue < best.resultValue ? m : best) : m.resultValue > best.resultValue ? m : best));
   });
 
   const recentSessions = computed(() =>
     sessions.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5),
+      .slice(0, 5)
   );
 
   const recentMarks = computed(() =>
     marks.value
       .slice()
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5),
+      .slice(0, 5)
   );
 
   const sessionsByType = computed(() => {
@@ -94,9 +84,9 @@ export const useAthleteStore = defineStore('athlete', () => {
   });
 
   const medals = computed(() => {
-    const gold = marks.value.filter((m) => m.ranking === 1).length;
-    const silver = marks.value.filter((m) => m.ranking === 2).length;
-    const bronze = marks.value.filter((m) => m.ranking === 3).length;
+    const gold = marks.value.filter(m => m.ranking === 1).length;
+    const silver = marks.value.filter(m => m.ranking === 2).length;
+    const bronze = marks.value.filter(m => m.ranking === 3).length;
     return { gold, silver, bronze, total: gold + silver + bronze };
   });
 
@@ -165,11 +155,11 @@ export const useAthleteStore = defineStore('athlete', () => {
   }
 
   function updateSessionSensations(id: string, sensations: TrainingSensations) {
-    sessions.value = sessions.value.map((s) => (s.id === id ? { ...s, sensations } : s));
+    sessions.value = sessions.value.map(s => (s.id === id ? { ...s, sensations } : s));
   }
 
   function updateMarkSensations(id: string, sensations: MarkSensations) {
-    marks.value = marks.value.map((m) => (m.id === id ? { ...m, sensations } : m));
+    marks.value = marks.value.map(m => (m.id === id ? { ...m, sensations } : m));
   }
 
   function addHabit(habit: Omit<Habit, 'id'>) {
@@ -177,16 +167,13 @@ export const useAthleteStore = defineStore('athlete', () => {
   }
 
   function toggleScheduleCompleted(id: string, sessionId?: string) {
-    schedule.value = schedule.value.map((s) =>
-      s.id === id ? { ...s, completed: !s.completed, sessionId: sessionId ?? s.sessionId } : s,
-    ) as ScheduledSession[];
+    schedule.value = schedule.value.map(s => (s.id === id ? { ...s, completed: !s.completed, sessionId: sessionId ?? s.sessionId } : s)) as ScheduledSession[];
   }
 
   return {
     athlete,
     marks,
     sessions,
-    team,
     rivals,
     nextCompetition,
     selectedDiscipline,
@@ -216,6 +203,6 @@ export const useAthleteStore = defineStore('athlete', () => {
     updateSessionSensations,
     updateMarkSensations,
     addHabit,
-    toggleScheduleCompleted,
+    toggleScheduleCompleted
   };
 });

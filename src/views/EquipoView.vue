@@ -1,112 +1,78 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import AthleteCard from '@/components/ui/AthleteCard.vue'
-import { useAthleteStore } from '@/stores/athlete'
-
-const store = useAthleteStore()
+import AppIcon from '@/components/ui/AppIcon.vue'
 
 const weeklyFeeling = ref<1 | 2 | 3 | 4 | 5 | null>(null)
 const feelingShared = ref(false)
+
+const FEELINGS = ['😞', '😕', '😐', '😊', '🤩']
+const LABELS   = ['Muy mal', 'Mal', 'Regular', 'Bien', 'Excelente']
 
 function shareFeeling(val: 1 | 2 | 3 | 4 | 5) {
   weeklyFeeling.value = val
   feelingShared.value = true
 }
-
-const feedMessages = [
-  {
-    author: 'Carlos Mendoza',
-    role: 'Entrenador',
-    message: 'Excelente trabajo en la sesión de velocidad de ayer. Los tiempos de 200m están bajando de forma consistente.',
-    time: 'Hace 2 horas',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=CarlosMendoza',
-  },
-  {
-    author: 'Ana Rodríguez',
-    role: 'Kinesióloga',
-    message: 'Recuerda hacer el protocolo de recuperación post-sesión. El masaje de rodilla es importante esta semana.',
-    time: 'Ayer',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AnaRodriguez',
-  },
-  {
-    author: 'Miguel Fuentes',
-    role: 'Nutricionista',
-    message: 'Plan de hidratación actualizado. Aumenta la ingesta de carbohidratos complejos los días de velocidad.',
-    time: 'Hace 3 días',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MiguelFuentes',
-  },
-]
 </script>
 
 <template>
   <div class="equipo">
-      <div class="equipo__header">
-        <h1 class="page-title">Mi Equipo</h1>
-        <p class="page-subtitle">Colaboración con tu cuerpo técnico</p>
-      </div>
+    <div class="equipo__header">
+      <h1 class="page-title">Mi Equipo</h1>
+      <p class="page-subtitle">Colaboración con tu cuerpo técnico</p>
+    </div>
 
-      <!-- Estado semanal del atleta -->
-      <div class="weekly-state">
-        <h2 class="section-title">Tu estado esta semana</h2>
-        <div v-if="!feelingShared" class="feeling-selector">
-          <p class="feeling-prompt">¿Cómo te has sentido esta semana?</p>
-          <div class="feeling-options">
-            <button
-              v-for="i in 5"
-              :key="i"
-              class="feeling-option"
-              @click="shareFeeling(i as 1 | 2 | 3 | 4 | 5)"
-            >
-              {{ ['😞', '😕', '😐', '😊', '🤩'][i - 1] }}
-              <span>{{ ['Muy mal', 'Mal', 'Regular', 'Bien', 'Excelente'][i - 1] }}</span>
-            </button>
-          </div>
-        </div>
-        <div v-else class="feeling-shared">
-          <span class="feeling-emoji">{{ ['😞', '😕', '😐', '😊', '🤩'][(weeklyFeeling ?? 3) - 1] }}</span>
-          <div>
-            <p class="feeling-shared__title">Estado compartido con tu equipo</p>
-            <p class="feeling-shared__value">{{ ['Muy mal', 'Mal', 'Regular', 'Bien', 'Excelente'][(weeklyFeeling ?? 3) - 1] }}</p>
-          </div>
-          <button class="feeling-reset" @click="feelingShared = false">Cambiar</button>
+    <!-- Estado semanal -->
+    <div class="weekly-state">
+      <h2 class="section-title">Tu estado esta semana</h2>
+      <div v-if="!feelingShared" class="feeling-selector">
+        <p class="feeling-prompt">¿Cómo te has sentido esta semana?</p>
+        <div class="feeling-options">
+          <button
+            v-for="i in 5"
+            :key="i"
+            class="feeling-option"
+            @click="shareFeeling(i as 1 | 2 | 3 | 4 | 5)"
+          >
+            {{ FEELINGS[i - 1] }}
+            <span>{{ LABELS[i - 1] }}</span>
+          </button>
         </div>
       </div>
+      <div v-else class="feeling-shared">
+        <span class="feeling-emoji">{{ FEELINGS[(weeklyFeeling ?? 3) - 1] }}</span>
+        <div>
+          <p class="feeling-shared__title">Estado registrado</p>
+          <p class="feeling-shared__value">{{ LABELS[(weeklyFeeling ?? 3) - 1] }}</p>
+        </div>
+        <button class="feeling-reset" @click="feelingShared = false">Cambiar</button>
+      </div>
+    </div>
 
-      <!-- Integrantes -->
-      <div class="team-section">
-        <h2 class="section-title">Cuerpo técnico</h2>
-        <div class="team-grid">
-          <AthleteCard
-            v-for="member in store.team"
-            :key="member.id"
-            :member="member"
-          />
-        </div>
+    <!-- Cuerpo técnico (vacío) -->
+    <div class="team-section">
+      <h2 class="section-title">Cuerpo técnico</h2>
+      <div class="empty-card">
+        <AppIcon name="Users" :size="32" class="empty-card__icon" />
+        <p class="empty-card__title">Sin integrantes aún</p>
+        <p class="empty-card__desc">Próximamente podrás agregar a tu entrenador, kinesiólogo, nutricionista y más.</p>
       </div>
+    </div>
 
-      <!-- Feed compartido -->
-      <div class="feed-section">
-        <h2 class="section-title">Feed del equipo</h2>
-        <div class="feed-list">
-          <div v-for="msg in feedMessages" :key="msg.author" class="feed-message">
-            <img :src="msg.avatar" :alt="msg.author" class="feed-message__avatar" />
-            <div class="feed-message__content">
-              <div class="feed-message__header">
-                <span class="feed-message__name">{{ msg.author }}</span>
-                <span class="feed-message__role">{{ msg.role }}</span>
-                <span class="feed-message__time">{{ msg.time }}</span>
-              </div>
-              <p class="feed-message__text">{{ msg.message }}</p>
-            </div>
-          </div>
-        </div>
+    <!-- Feed (vacío) -->
+    <div class="feed-section">
+      <h2 class="section-title">Feed del equipo</h2>
+      <div class="empty-card">
+        <AppIcon name="MessageSquare" :size="32" class="empty-card__icon" />
+        <p class="empty-card__title">Sin actividad</p>
+        <p class="empty-card__desc">Aquí aparecerán los mensajes y notas de tu cuerpo técnico.</p>
       </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .equipo {
-  padding: 24px 16px;
+  padding: 24px 16px 100px;
   max-width: 900px;
   margin: 0 auto;
   display: flex;
@@ -116,24 +82,19 @@ const feedMessages = [
 
 @media (min-width: 1024px) {
   .equipo {
-    padding: 32px 40px;
+    padding: 32px 40px 60px;
     display: grid;
     grid-template-columns: 350px 1fr;
-    grid-template-areas: 
-      "header header"
+    grid-template-areas:
+      "header  header"
       "feeling feeling"
       "members feed";
     gap: 32px;
   }
-  
   .equipo__header { grid-area: header; }
-  .weekly-state { grid-area: feeling; }
-  .team-section { grid-area: members; }
-  .feed-section { grid-area: feed; }
-  
-  .team-grid {
-    grid-template-columns: 1fr; /* Stack members when side by side with feed */
-  }
+  .weekly-state   { grid-area: feeling; }
+  .team-section   { grid-area: members; }
+  .feed-section   { grid-area: feed; }
 }
 
 .page-title {
@@ -141,42 +102,39 @@ const feedMessages = [
   font-weight: 700;
   color: var(--color-heading);
 }
-
 .page-subtitle {
   font-size: 14px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
-
 .section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--vt-c-text-dark-2);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 12px;
 }
 
+/* Weekly feeling */
 .weekly-state {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 20px;
+  box-shadow: var(--card-shadow);
 }
-
 .feeling-prompt {
   font-size: 15px;
   color: var(--color-heading);
   margin-bottom: 16px;
 }
-
 .feeling-options {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
 }
-
 .feeling-option {
   display: flex;
   flex-direction: column;
@@ -188,124 +146,70 @@ const feedMessages = [
   background: none;
   cursor: pointer;
   font-size: 28px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
   transition: all 0.2s;
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-.feeling-option span {
-  font-size: 11px;
-}
-
+.feeling-option span { font-size: 11px; }
 .feeling-option:hover {
   background: var(--glass-bg);
   border-color: var(--accent-primary);
 }
-
 .feeling-shared {
   display: flex;
   align-items: center;
   gap: 16px;
 }
-
-.feeling-emoji {
-  font-size: 40px;
-}
-
+.feeling-emoji { font-size: 40px; }
 .feeling-shared__title {
   font-size: 13px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
 }
-
 .feeling-shared__value {
   font-size: 18px;
   font-weight: 700;
   color: var(--color-heading);
 }
-
 .feeling-reset {
   margin-left: auto;
   background: none;
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 6px 12px;
-  color: var(--vt-c-text-dark-2);
+  color: var(--color-text-muted);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .feeling-reset:hover {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
 
-.team-grid {
-  display: grid;
-  gap: 12px;
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .team-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.feed-list {
+/* Empty state */
+.empty-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.feed-message {
+  align-items: center;
+  gap: 10px;
+  padding: 40px 24px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 14px;
-  display: flex;
-  gap: 12px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: var(--card-shadow);
 }
-
-.feed-message__avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--glass-border);
-  flex-shrink: 0;
-}
-
-.feed-message__header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
-}
-
-.feed-message__name {
-  font-size: 13px;
-  font-weight: 700;
+.empty-card__icon { opacity: 0.3; color: var(--color-text-muted); }
+.empty-card__title {
+  font-size: 15px;
+  font-weight: 600;
   color: var(--color-heading);
 }
-
-.feed-message__role {
-  font-size: 11px;
-  color: var(--accent-primary);
-  background: rgba(99, 102, 241, 0.1);
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-
-.feed-message__time {
-  font-size: 11px;
-  color: var(--vt-c-text-dark-2);
-  margin-left: auto;
-}
-
-.feed-message__text {
+.empty-card__desc {
   font-size: 13px;
-  color: var(--vt-c-text-dark-2);
-  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 280px;
+  line-height: 1.5;
 }
 </style>
