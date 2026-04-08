@@ -1,223 +1,145 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-
-const S = 4 // px por "pixel" lógico
-
-const C: Record<string, string | null> = {
-  '.': null,
-  's': '#F8CBA6', // piel
-  'r': '#5C3D2E', // cabello
-  'p': '#5b5ef4', // camiseta (brand)
-  'd': '#1e1b4b', // shorts / zapatillas / brazos
-}
-
-// 10 columnas × 13 filas — 4 frames del ciclo de carrera
-const FRAMES = [
-  // Frame 0 – zancada A (pierna derecha al frente)
-  [
-    '....ss....',
-    '...ssss...',
-    '..rssssr..',
-    '..rse.sr..',
-    '...ssss...',
-    '.d.ppppp.p',
-    '...ppppp..',
-    '....ddd...',
-    '...d...d..',
-    '..d.....d.',
-    '.d.......d',
-    'dd.......d',
-    '........dd',
-  ],
-  // Frame 1 – vuelo A (piernas recogiendo)
-  [
-    '....ss....',
-    '...ssss...',
-    '..rssssr..',
-    '..rse.sr..',
-    '...ssss...',
-    '.d.ppppp.p',
-    '...ppppp..',
-    '....ddd...',
-    '....d.d...',
-    '...d...d..',
-    '..d.....d.',
-    '.dd.....dd',
-    '.dd.....dd',
-  ],
-  // Frame 2 – zancada B (pierna izquierda al frente, espejo)
-  [
-    '....ss....',
-    '...ssss...',
-    '..rssssr..',
-    '..rse.sr..',
-    '...ssss...',
-    '.d.ppppp.p',
-    '...ppppp..',
-    '....ddd...',
-    '...d...d..',
-    '..d.....d.',
-    '.d.......d',
-    'd.......dd',
-    'dd........',
-  ],
-  // Frame 3 – vuelo B
-  [
-    '....ss....',
-    '...ssss...',
-    '..rssssr..',
-    '..rse.sr..',
-    '...ssss...',
-    '.d.ppppp.p',
-    '...ppppp..',
-    '....ddd...',
-    '....d.d...',
-    '...d...d..',
-    '..d.....d.',
-    '.dd.....dd',
-    'dd.....dd.',
-  ],
-]
-
-const frameIndex = ref(0)
-let timer: ReturnType<typeof setInterval>
-
-onMounted(() => {
-  timer = setInterval(() => {
-    frameIndex.value = (frameIndex.value + 1) % FRAMES.length
-  }, 130)
-})
-
-onUnmounted(() => clearInterval(timer))
-
-const pixels = computed(() => {
-  const out: { x: number; y: number; c: string }[] = []
-  const frame = FRAMES[frameIndex.value] ?? FRAMES[0]!
-  frame.forEach((row, ri) => {
-    ;[...row].forEach((ch, ci) => {
-      const color = C[ch]
-      if (color) out.push({ x: ci * S, y: ri * S, c: color })
-    })
-  })
-  return out
-})
-
-const W = 10 * S // 40
-const H = 13 * S // 52
+// Corredor 8-bit con SVG geométrico + animación CSS pura
+// Sin assets externos — proporciones humanas claras
 </script>
 
 <template>
-  <div class="pixel-runner">
-    <div class="pixel-runner__track">
-      <!-- Líneas de velocidad -->
-      <div class="pixel-runner__speedlines" aria-hidden="true">
-        <span v-for="n in 5" :key="n" class="pixel-runner__line" :style="`--i:${n}`" />
-      </div>
+  <div class="runner-wrap" aria-hidden="true">
+    <div class="runner-track">
+      <!-- SVG corredor: cada parte del cuerpo es un rect/circle para look pixel-art -->
+      <svg class="runner" width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cabeza -->
+        <rect x="10" y="0" width="12" height="10" rx="1" fill="#F8CBA6"/>
+        <!-- Pelo -->
+        <rect x="10" y="0" width="12" height="3" rx="1" fill="#292524"/>
+        <!-- Ojo -->
+        <rect x="18" y="4" width="2" height="2" fill="#292524"/>
+        <!-- Cuello -->
+        <rect x="13" y="10" width="6" height="3" fill="#F8CBA6"/>
+        <!-- Cuerpo / camiseta -->
+        <rect x="9" y="13" width="14" height="11" rx="1" fill="#5b5ef4"/>
+        <!-- Shorts -->
+        <rect x="11" y="24" width="10" height="5" rx="1" fill="#1e1b4b"/>
 
-      <!-- Sprite del atleta -->
-      <svg
-        class="pixel-runner__sprite"
-        :width="W"
-        :height="H"
-        :viewBox="`0 0 ${W} ${H}`"
-        aria-hidden="true"
-      >
-        <rect
-          v-for="(px, i) in pixels"
-          :key="i"
-          :x="px.x"
-          :y="px.y"
-          :width="S"
-          :height="S"
-          :fill="px.c"
-        />
+        <!-- Brazo izquierdo (anima rotation desde hombro) -->
+        <g class="arm-left" style="transform-origin: 9px 15px">
+          <rect x="4" y="13" width="5" height="10" rx="2" fill="#5b5ef4"/>
+        </g>
+        <!-- Brazo derecho -->
+        <g class="arm-right" style="transform-origin: 23px 15px">
+          <rect x="23" y="13" width="5" height="10" rx="2" fill="#5b5ef4"/>
+        </g>
+
+        <!-- Pierna izquierda: muslo + espinilla como grupo pivotando desde cadera -->
+        <g class="leg-left" style="transform-origin: 13px 29px">
+          <rect x="11" y="29" width="5" height="8" rx="1" fill="#1e1b4b"/>
+          <g class="shin-left" style="transform-origin: 13px 37px">
+            <rect x="11" y="37" width="5" height="7" rx="1" fill="#292524"/>
+            <!-- Zapatilla izquierda -->
+            <rect x="9"  y="43" width="7" height="3" rx="1" fill="#111827"/>
+          </g>
+        </g>
+
+        <!-- Pierna derecha -->
+        <g class="leg-right" style="transform-origin: 19px 29px">
+          <rect x="17" y="29" width="5" height="8" rx="1" fill="#1e1b4b"/>
+          <g class="shin-right" style="transform-origin: 19px 37px">
+            <rect x="17" y="37" width="5" height="7" rx="1" fill="#292524"/>
+            <!-- Zapatilla derecha -->
+            <rect x="17" y="43" width="7" height="3" rx="1" fill="#111827"/>
+          </g>
+        </g>
       </svg>
     </div>
-
     <!-- Pista -->
-    <div class="pixel-runner__ground" aria-hidden="true">
-      <span v-for="n in 24" :key="n" class="pixel-runner__dash" :style="`--j:${n}`" />
-    </div>
+    <div class="runner-ground"/>
   </div>
 </template>
 
 <style scoped>
-.pixel-runner {
-  width: min(360px, 88vw);
+.runner-wrap {
+  width: min(360px, 90vw);
   margin: 0 auto;
 }
 
 /* ── Carril ── */
-.pixel-runner__track {
+.runner-track {
   position: relative;
-  height: 56px;
+  height: 64px;
   overflow: hidden;
 }
 
-/* ── Líneas de velocidad (pasan de derecha a izquierda) ── */
-.pixel-runner__speedlines {
+/* ── Corredor se mueve de izquierda a derecha ── */
+.runner {
   position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.pixel-runner__line {
-  position: absolute;
-  top: calc(20% + var(--i) * 14%);
-  right: -10%;
-  width: calc(28% - var(--i) * 3%);
-  height: 2px;
-  background: var(--accent-primary);
-  opacity: calc(0.12 + var(--i) * 0.04);
-  border-radius: 1px;
-  animation: speedline 0.7s linear infinite;
-  animation-delay: calc(var(--i) * -0.14s);
-}
-
-@keyframes speedline {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-400%); }
-}
-
-/* ── Sprite corriendo de izquierda a derecha ── */
-.pixel-runner__sprite {
-  position: absolute;
-  bottom: 0;
+  bottom: 4px;
   left: 0;
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  animation: run-across 2.6s linear infinite;
+  /* se escala al doble para que sea visible */
+  transform: scale(2);
+  transform-origin: left bottom;
+  animation: run-cross 3s linear infinite;
 }
 
-@keyframes run-across {
-  0%   { left: -48px; }
-  100% { left: calc(100% + 48px); }
+@keyframes run-cross {
+  0%   { left: -80px; }
+  100% { left: calc(100% + 20px); }
 }
 
-/* ── Pista con guiones animados ── */
-.pixel-runner__ground {
-  display: flex;
-  gap: 0;
-  align-items: center;
-  height: 4px;
-  overflow: hidden;
-  position: relative;
+/* ── Ciclo de carrera: piernas ── */
+.leg-left {
+  animation: leg-l 0.52s ease-in-out infinite alternate;
+}
+.leg-right {
+  animation: leg-r 0.52s ease-in-out infinite alternate;
+}
+.shin-left {
+  animation: shin-l 0.52s ease-in-out infinite alternate;
+}
+.shin-right {
+  animation: shin-r 0.52s ease-in-out infinite alternate;
 }
 
-.pixel-runner__dash {
-  flex-shrink: 0;
-  width: 12px;
+@keyframes leg-l {
+  0%   { transform: rotate(-30deg); }
+  100% { transform: rotate(35deg); }
+}
+@keyframes leg-r {
+  0%   { transform: rotate(35deg); }
+  100% { transform: rotate(-30deg); }
+}
+@keyframes shin-l {
+  0%   { transform: rotate(0deg); }
+  50%  { transform: rotate(40deg); }
+  100% { transform: rotate(10deg); }
+}
+@keyframes shin-r {
+  0%   { transform: rotate(10deg); }
+  50%  { transform: rotate(40deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ── Brazos (opuesto a las piernas) ── */
+.arm-left {
+  animation: arm-l 0.52s ease-in-out infinite alternate;
+}
+.arm-right {
+  animation: arm-r 0.52s ease-in-out infinite alternate;
+}
+@keyframes arm-l {
+  0%   { transform: rotate(35deg); }
+  100% { transform: rotate(-25deg); }
+}
+@keyframes arm-r {
+  0%   { transform: rotate(-25deg); }
+  100% { transform: rotate(35deg); }
+}
+
+/* ── Suelo ── */
+.runner-ground {
   height: 2px;
-  margin-right: 4px;
-  background: var(--accent-primary);
-  opacity: 0.25;
+  background: linear-gradient(90deg, transparent, #5b5ef4 25%, #5b5ef4 75%, transparent);
+  opacity: 0.35;
   border-radius: 1px;
-  animation: dash-scroll 0.5s linear infinite;
-  animation-delay: calc(var(--j) * -0.021s);
-}
-
-@keyframes dash-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-16px); }
 }
 </style>
