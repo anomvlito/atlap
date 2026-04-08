@@ -92,7 +92,8 @@ onUnmounted(() => clearInterval(timer))
 
 const pixels = computed(() => {
   const out: { x: number; y: number; c: string }[] = []
-  FRAMES[frameIndex.value].forEach((row, ri) => {
+  const frame = FRAMES[frameIndex.value] ?? FRAMES[0]!
+  frame.forEach((row, ri) => {
     ;[...row].forEach((ch, ci) => {
       const color = C[ch]
       if (color) out.push({ x: ci * S, y: ri * S, c: color })
