@@ -116,6 +116,7 @@ export function useCurrentUser() {
       }
       if (checkedClerkId.value === clerkUser.id) return;
       checkedClerkId.value = clerkUser.id;
+      isChecking.value = true;
       // Garantiza que el usuario exista en DB en cada inicio de sesión
       try {
         const email = clerkUser.primaryEmailAddress?.emailAddress ?? '';
